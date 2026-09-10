@@ -1,69 +1,87 @@
-import Image from "next/image";
+import Link from 'next/link'
 
-export default function Home() {
+export default function LandingPage() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <div className="flex flex-col min-h-screen bg-background">
+      {/* Header */}
+      <header className="border-b border-border bg-card">
+        <div className="max-w-4xl mx-auto px-4 py-4 flex items-center gap-3">
+          <span className="text-2xl">🍀</span>
+          <h1 className="text-xl font-bold text-clover">CloverFit</h1>
+        </div>
+      </header>
+
+      {/* Hero */}
+      <main className="flex-1 flex flex-col items-center justify-center px-4 py-12">
+        <div className="max-w-lg w-full text-center space-y-6">
+          <div className="text-5xl mb-2">🍀</div>
+          <h2 className="text-2xl font-bold text-foreground">
+            心拍リカバリーで見える化する
+            <br />
+            あなたのコンディション
+          </h2>
+          <p className="text-muted text-sm leading-relaxed">
+            CloverFitは心拍データから自律神経の回復力をスコア化し、
+            <br className="hidden sm:inline" />
+            あなたのウェルビーイングを数値で「見える化」します。
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+
+        {/* Two mode cards */}
+        <div className="max-w-lg w-full mt-10 grid gap-4 sm:grid-cols-2">
+          {/* Simple mode */}
+          <Link
+            href="/simple"
+            className="group block rounded-xl border border-border bg-card p-6 transition-all hover:border-clover hover:shadow-md"
           >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            <div className="text-3xl mb-3">🌱</div>
+            <h3 className="font-bold text-lg text-foreground mb-2">
+              スコアを見てみる
+            </h3>
+            <p className="text-muted text-sm leading-relaxed">
+              ログイン不要。心拍データを入力するだけで、あなたのコンディションスコアをすぐに確認できます。
+            </p>
+            <div className="mt-4 text-clover text-sm font-medium group-hover:translate-x-1 transition-transform inline-flex items-center gap-1">
+              はじめる
+              <span aria-hidden="true">&rarr;</span>
+            </div>
+          </Link>
+
+          {/* Record mode */}
+          <Link
+            href="/record/login"
+            className="group block rounded-xl border border-border bg-card p-6 transition-all hover:border-clover hover:shadow-md"
           >
-            Documentation
-          </a>
+            <div className="text-3xl mb-3">📊</div>
+            <h3 className="font-bold text-lg text-foreground mb-2">
+              記録して管理する
+            </h3>
+            <p className="text-muted text-sm leading-relaxed">
+              測定データを記録・管理。スコア推移やフィードバック、PDFレポートで成長を実感できます。
+            </p>
+            <div className="mt-4 text-clover text-sm font-medium group-hover:translate-x-1 transition-transform inline-flex items-center gap-1">
+              ログイン
+              <span aria-hidden="true">&rarr;</span>
+            </div>
+          </Link>
         </div>
+
+        {/* Footer note */}
+        <p className="mt-8 text-muted text-xs">
+          インストラクターの方は
+          <Link href="/record/login" className="text-clover underline underline-offset-2 ml-1">
+            こちら
+          </Link>
+          からログインしてください
+        </p>
       </main>
+
+      {/* Footer */}
+      <footer className="border-t border-border bg-card py-4">
+        <div className="max-w-4xl mx-auto px-4 text-center text-xs text-muted">
+          &copy; 2024-2026 CloverFit &mdash; Wellbeing Management
+        </div>
+      </footer>
     </div>
-  );
+  )
 }
