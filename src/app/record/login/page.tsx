@@ -176,7 +176,16 @@ export default function LoginPage() {
             </form>
           )}
 
-          <div className="mt-6 text-center">
+          {mode === 'participant' && (
+            <div className="mt-6 text-center">
+              <p className="text-sm text-muted">はじめての方は</p>
+              <Link href="/record/register" className="text-sm font-medium text-clover hover:text-clover-dark transition-colors">
+                新規登録はこちら
+              </Link>
+            </div>
+          )}
+
+          <div className="mt-4 text-center">
             <Link href="/" className="text-sm text-muted hover:text-foreground transition-colors">
               &larr; トップに戻る
             </Link>
