@@ -11,7 +11,6 @@ export default function ParticipantsPage() {
   // New participant form
   const [name, setName] = useState('')
   const [pinCode, setPinCode] = useState('')
-  const [email, setEmail] = useState('')
   const [birthDate, setBirthDate] = useState('')
   const [companyName, setCompanyName] = useState('')
   const [gender, setGender] = useState('')
@@ -42,7 +41,6 @@ export default function ParticipantsPage() {
         body: JSON.stringify({
           name,
           pin_code: pinCode,
-          email: email || null,
           birth_date: birthDate || null,
           company_name: companyName || null,
           gender: gender || null,
@@ -58,7 +56,6 @@ export default function ParticipantsPage() {
       // Reset and reload
       setName('')
       setPinCode('')
-      setEmail('')
       setBirthDate('')
       setCompanyName('')
       setGender('')
@@ -115,16 +112,6 @@ export default function ParticipantsPage() {
                   onChange={e => setPinCode(e.target.value.replace(/\D/g, '').slice(0, 4))}
                   required
                   placeholder="1234"
-                  className="w-full rounded-lg border border-border bg-card px-3 py-2 text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-clover/40"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-muted mb-1">メールアドレス</label>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={e => setEmail(e.target.value)}
-                  placeholder="taro@example.com"
                   className="w-full rounded-lg border border-border bg-card px-3 py-2 text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-clover/40"
                 />
               </div>
@@ -189,9 +176,6 @@ export default function ParticipantsPage() {
                   <div className="flex items-center gap-2 mt-0.5">
                     {p.company_name && (
                       <span className="text-xs text-muted">{p.company_name}</span>
-                    )}
-                    {p.email && (
-                      <span className="text-xs text-muted">{p.email}</span>
                     )}
                   </div>
                 </div>
