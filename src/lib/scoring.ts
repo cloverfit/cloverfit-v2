@@ -51,11 +51,11 @@ export function calculateScore(hr: HRData, subjective?: SubjectiveData): ScoreRe
 
 // レベル判定
 const LEVELS: ScoreLevel[] = [
-  { name: 'master', emoji: '🍀👑', label: 'Master', min: 100 },
-  { name: 'excellent', emoji: '☘️', label: '三葉 Excellent', min: 80 },
-  { name: 'good', emoji: '🌿', label: '二葉 Good', min: 60 },
-  { name: 'average', emoji: '🌱', label: '一葉 Average', min: 40 },
-  { name: 'seed', emoji: '🌰', label: 'Seed', min: 0 },
+  { name: 'a_plus', emoji: '', label: 'A+', min: 100 },
+  { name: 'a', emoji: '', label: 'A', min: 80 },
+  { name: 'b', emoji: '', label: 'B', min: 60 },
+  { name: 'c', emoji: '', label: 'C', min: 40 },
+  { name: 'd', emoji: '', label: 'D', min: 0 },
 ]
 
 export function getLevel(score: number): ScoreLevel {
@@ -80,52 +80,61 @@ export function generateAutoFeedback(
 ): AutoFeedback {
   const recoveryAmount = hr.maxHR - hr.recoveryHR
 
-  // スコア帯フィードバック
+  // スコア帯フィードバック（心拍回復と自律神経の研究に基づく）
+  // 参考: Cole et al. (1999) NEJM, Jouven et al. (2005) NEJM - 心拍回復は自律神経機能の指標
   let scoreFeedback: string
   if (score >= 100) {
-    scoreFeedback = '最高レベルのコンディション！トップアスリート並みのリカバリー力です。'
+    scoreFeedback = 'ランクA+。副交感神経の再活性化が非常に速く、自律神経のバランスが優れた状態です。運動後の迷走神経トーンが高く、心血管系の健康状態が良好であることを示しています。'
   } else if (score >= 80) {
-    scoreFeedback = '素晴らしいコンディションです。心身のバランスが非常に良い状態。周りにも良い影響を与えているはずです。'
+    scoreFeedback = 'ランクA。運動後の心拍回復が良好で、交感神経から副交感神経への切り替えがスムーズです。定期的な有酸素運動の効果が表れています。'
   } else if (score >= 60) {
-    scoreFeedback = '良好なコンディションです！自律神経の切り替えがスムーズです。この調子を維持しましょう。'
+    scoreFeedback = 'ランクB。自律神経の切り替え機能は平均的な水準です。週3回以上の中強度有酸素運動（最大心拍数の60-70%）を継続することで、回復力の向上が期待できます。'
   } else if (score >= 40) {
-    scoreFeedback = '基礎的なコンディションは整っています。リカバリー力をさらに高めるために、有酸素運動を続けましょう。'
+    scoreFeedback = 'ランクC。心拍の回復にやや時間がかかっている状態です。迷走神経の活動を高めるために、深呼吸（吸気4秒・呼気8秒）の習慣化と、ウォーキングなどの軽い有酸素運動が有効です。'
   } else {
-    scoreFeedback = 'お疲れ気味のようです。まずは深い呼吸と軽い運動から始めましょう。睡眠の質を意識するだけでもスコアが上がります。'
+    scoreFeedback = 'ランクD。心拍回復が遅めで、自律神経の疲労が蓄積している可能性があります。睡眠時間の確保（7-9時間）、カフェイン摂取の制限、呼吸法の実践から始めましょう。過度な運動は避け、まず休養を優先してください。'
   }
 
   // リカバリー量フィードバック
+  // 参考: 運動後1分間の心拍回復量（HRR1）は12bpm以上が正常の目安
   let recoveryFeedback: string
   if (recoveryAmount >= 40) {
-    recoveryFeedback = '回復力が非常に高い状態です（上位20%）。自律神経の切り替えが優秀です。'
+    recoveryFeedback = '心拍回復量が40bpm以上と非常に優れています。副交感神経の再活性化が速く、高い心肺機能を維持できています。'
   } else if (recoveryAmount >= 25) {
-    recoveryFeedback = '良好な回復力です。運動後の心拍がしっかり下がっています。'
-  } else if (recoveryAmount >= 15) {
-    recoveryFeedback = '標準的な回復力です。継続的な有酸素運動でさらに向上が期待できます。'
+    recoveryFeedback = '心拍回復量は良好な水準です。運動後の副交感神経の働きが安定しており、日常的な運動習慣の効果が出ています。'
+  } else if (recoveryAmount >= 12) {
+    recoveryFeedback = '心拍回復量は正常範囲内です。有酸素運動の頻度を上げることで、回復速度の改善が見込めます。インターバルトレーニングも効果的です。'
   } else {
-    recoveryFeedback = '回復力が低めです。疲労が蓄積している可能性があります。十分な休養と呼吸法を取り入れましょう。'
+    recoveryFeedback = '心拍回復量が12bpm未満で、回復に時間がかかっています。慢性的なストレスや睡眠不足、オーバートレーニングの可能性があります。まずは十分な休養と軽めの運動から再開しましょう。'
   }
 
   // 安静時HR フィードバック
+  // 参考: 成人の安静時心拍数の正常値は60-100bpm（AHA）
   let restingHRFeedback: string
   if (hr.restingHR < 60) {
-    restingHRFeedback = '安静時心拍が低く、基礎体力が高い状態です。'
-  } else if (hr.restingHR < 80) {
-    restingHRFeedback = '安静時心拍は標準的な範囲です。'
+    restingHRFeedback = '安静時心拍数が60bpm未満で、副交感神経が優位な状態です。持久系トレーニングの適応が見られ、心臓の1回拍出量が多い効率的な状態です。'
+  } else if (hr.restingHR < 75) {
+    restingHRFeedback = '安静時心拍数は標準的な範囲です。規則的な有酸素運動を続けることで、さらに低下する可能性があります。'
+  } else if (hr.restingHR < 90) {
+    restingHRFeedback = '安静時心拍数がやや高めです。交感神経が優位になっている可能性があり、ストレス管理や十分な睡眠で改善が期待できます。'
   } else {
-    restingHRFeedback = '安静時心拍がやや高めです。疲労蓄積やストレスの可能性があります。'
+    restingHRFeedback = '安静時心拍数が90bpm以上です。疲労やストレスの蓄積、脱水、カフェインの過剰摂取などが考えられます。持続する場合は医療機関への相談をおすすめします。'
   }
 
   // 前回比較
   let trendFeedback: string | undefined
   if (previousScore !== undefined) {
     const diff = score - previousScore
-    if (diff >= 5) {
-      trendFeedback = `前回より+${diff}点！着実に改善しています。`
+    if (diff >= 10) {
+      trendFeedback = `前回より+${diff}点。大幅な改善が見られます。生活習慣の改善や休養の効果が出ています。`
+    } else if (diff >= 5) {
+      trendFeedback = `前回より+${diff}点。回復力が向上傾向にあります。`
+    } else if (diff <= -10) {
+      trendFeedback = `前回より${diff}点。大きく低下しています。睡眠・ストレス・運動量を振り返り、オーバートレーニングになっていないか確認してみてください。`
     } else if (diff <= -5) {
-      trendFeedback = `前回より${diff}点。疲労やストレスの蓄積がないか振り返ってみましょう。`
+      trendFeedback = `前回より${diff}点。疲労の蓄積やコンディションの変化が考えられます。`
     } else {
-      trendFeedback = `前回と同水準をキープ。安定したコンディションです。`
+      trendFeedback = `前回とほぼ同水準（${diff >= 0 ? '+' : ''}${diff}点）。安定したコンディションを維持できています。`
     }
   }
 

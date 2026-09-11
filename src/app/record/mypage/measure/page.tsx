@@ -146,8 +146,8 @@ export default function SelfMeasurePage() {
           {success && (
             <div className="rounded-xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 p-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/40 flex items-center justify-center shrink-0">
-                  <span className="text-xl">🍀</span>
+                <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/40 flex items-center justify-center shrink-0 text-emerald-600 dark:text-emerald-300 font-bold text-sm">
+                  OK
                 </div>
                 <div>
                   <p className="text-sm font-bold text-emerald-700 dark:text-emerald-300">記録しました！</p>
