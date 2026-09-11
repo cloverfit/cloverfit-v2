@@ -14,6 +14,7 @@ export interface Instructor {
   id: string
   name: string
   email: string
+  instructor_code?: string
   role: 'admin' | 'instructor'
   created_at: string
 }

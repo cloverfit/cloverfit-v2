@@ -17,8 +17,7 @@ export default function LoginPage() {
   const [pin, setPin] = useState('')
 
   // Instructor fields
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const [instructorCode, setInstructorCode] = useState('')
 
   async function handleParticipantLogin(e: React.FormEvent) {
     e.preventDefault()
@@ -38,7 +37,6 @@ export default function LoginPage() {
         return
       }
 
-      // Store participant session in sessionStorage
       sessionStorage.setItem('participant', JSON.stringify(data.participant))
       router.push('/record/mypage')
     } catch {
@@ -57,7 +55,7 @@ export default function LoginPage() {
       const res = await fetch('/api/auth/instructor', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ instructor_code: instructorCode }),
       })
       const data = await res.json()
 
@@ -156,30 +154,21 @@ export default function LoginPage() {
           ) : (
             <form onSubmit={handleInstructorLogin} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-foreground mb-1">メールアドレス</label>
+                <label className="block text-sm font-medium text-foreground mb-1">インストラクターコード</label>
                 <input
-                  type="email"
-                  value={email}
-                  onChange={e => setEmail(e.target.value)}
-                  placeholder="instructor@example.com"
+                  type="text"
+                  value={instructorCode}
+                  onChange={e => setInstructorCode(e.target.value.toUpperCase().slice(0, 6))}
+                  placeholder="CLV001"
                   required
-                  className="w-full rounded-lg border border-border bg-card px-4 py-3 text-foreground placeholder:text-muted/50 focus:outline-none focus:ring-2 focus:ring-clover/40 focus:border-clover transition-colors"
+                  maxLength={6}
+                  className="w-full rounded-lg border border-border bg-card px-4 py-3 text-foreground text-lg tracking-[0.3em] text-center uppercase placeholder:text-muted/50 placeholder:tracking-normal focus:outline-none focus:ring-2 focus:ring-clover/40 focus:border-clover transition-colors"
                 />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-foreground mb-1">パスワード</label>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={e => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  required
-                  className="w-full rounded-lg border border-border bg-card px-4 py-3 text-foreground placeholder:text-muted/50 focus:outline-none focus:ring-2 focus:ring-clover/40 focus:border-clover transition-colors"
-                />
+                <p className="text-xs text-muted mt-1.5">管理者から共有されたコードを入力してください</p>
               </div>
               <button
                 type="submit"
-                disabled={loading || !email || !password}
+                disabled={loading || !instructorCode}
                 className="w-full rounded-lg bg-clover text-white font-bold py-3 hover:bg-clover-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? 'ログイン中...' : '管理画面へ'}
