@@ -252,6 +252,23 @@ export default function MyPage() {
                 </div>
               )}
 
+              {/* Self-measure button */}
+              <Link
+                href="/record/mypage/measure"
+                className="flex items-center justify-between rounded-2xl border border-border bg-card p-4 hover:border-clover/40 transition-colors group"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-clover-light flex items-center justify-center shrink-0">
+                    <span className="text-lg">💓</span>
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-foreground">自分で測定を記録する</p>
+                    <p className="text-xs text-muted mt-0.5">心拍データを入力してスコアを確認</p>
+                  </div>
+                </div>
+                <span className="text-muted group-hover:text-clover transition-colors text-lg">→</span>
+              </Link>
+
               {/* Feedback card */}
               {latest?.feedback && (
                 <div className="rounded-2xl border border-border bg-card overflow-hidden">
@@ -334,9 +351,16 @@ export default function MyPage() {
               </div>
               <h3 className="text-base font-bold text-foreground">まだ測定データがありません</h3>
               <p className="text-sm text-muted mt-2 leading-relaxed">
-                インストラクターによる初回測定を受けると、<br className="hidden sm:block" />
-                ここにあなたのスコアと変化が表示されます。
+                自分で測定データを記録するか、<br className="hidden sm:block" />
+                インストラクターによる測定を受けましょう。
               </p>
+              <Link
+                href="/record/mypage/measure"
+                className="mt-5 inline-flex items-center justify-center gap-2 rounded-xl bg-clover text-white font-bold py-3 px-6 hover:bg-clover-dark transition-colors shadow-sm"
+              >
+                <span className="text-lg">💓</span>
+                自分で測定を記録する
+              </Link>
             </div>
           )}
 
