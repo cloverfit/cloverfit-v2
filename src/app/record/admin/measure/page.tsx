@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import type { Participant } from '@/types/database'
-import { calculateScore, generateAutoFeedback, type ScoreResult } from '@/lib/scoring'
+import { calculateScore, generateAutoFeedback, type ScoreResult, type AutoFeedback } from '@/lib/scoring'
 
 export default function MeasurePage() {
   const [participants, setParticipants] = useState<Participant[]>([])
@@ -26,6 +26,14 @@ export default function MeasurePage() {
   const [saving, setSaving] = useState(false)
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState('')
+
+  // Result data (preserved after form reset for the result screen)
+  const [savedResult, setSavedResult] = useState<{
+    score: ScoreResult
+    feedback: AutoFeedback
+    hrData: { restingHR: number; maxHR: number; recoveryHR: number }
+    participantName: string
+  } | null>(null)
 
   useEffect(() => {
     fetch('/api/participants')
@@ -99,6 +107,14 @@ export default function MeasurePage() {
         throw new Error(data.error || '保存に失敗しました')
       }
 
+      // Save result data for the result screen
+      const selectedParticipant = participants.find(p => p.id === selectedId)
+      setSavedResult({
+        score: preview,
+        feedback: autoFeedback,
+        hrData,
+        participantName: selectedParticipant?.name || '',
+      })
       setSuccess(true)
       // Reset form
       setRestingHR('')
@@ -109,6 +125,7 @@ export default function MeasurePage() {
       setStress('')
       setSleepQuality('')
       setNotes('')
+      setSelectedId('')
       setPreview(null)
     } catch (err) {
       setError(err instanceof Error ? err.message : '保存に失敗しました')
@@ -121,11 +138,103 @@ export default function MeasurePage() {
     <div className="space-y-6">
       <h2 className="text-xl font-bold text-foreground">測定入力</h2>
 
-      {success && (
-        <div className="rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 p-3 text-sm text-green-700 dark:text-green-400">
-          測定データを保存しました
-        </div>
-      )}
+      {/* Result screen */}
+      {success && savedResult && (() => {
+        const { score, feedback, hrData, participantName } = savedResult
+        function getScoreGradient(s: number): string {
+          if (s >= 100) return 'from-amber-400 to-yellow-500'
+          if (s >= 80) return 'from-emerald-500 to-green-600'
+          if (s >= 60) return 'from-teal-400 to-emerald-500'
+          if (s >= 40) return 'from-sky-400 to-blue-500'
+          return 'from-slate-400 to-slate-500'
+        }
+        function getScoreAccent(s: number): string {
+          if (s >= 100) return 'text-amber-500'
+          if (s >= 80) return 'text-emerald-600 dark:text-emerald-400'
+          if (s >= 60) return 'text-teal-600 dark:text-teal-400'
+          if (s >= 40) return 'text-sky-600 dark:text-sky-400'
+          return 'text-slate-500'
+        }
+        const barWidth = Math.min((score.totalScore / 120) * 100, 100)
+
+        return (
+          <div className="max-w-lg space-y-5">
+            {/* Score card */}
+            <div className="rounded-2xl border border-border bg-card overflow-hidden">
+              <div className={`bg-gradient-to-r ${getScoreGradient(score.totalScore)} p-6 text-white`}>
+                {participantName && (
+                  <p className="text-white/90 text-sm font-bold mb-1">{participantName}</p>
+                )}
+                <p className="text-white/80 text-xs font-medium tracking-wider uppercase">Score</p>
+                <div className="flex items-start justify-between mt-1">
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-6xl font-extrabold tracking-tighter">{score.totalScore}</span>
+                    <span className="text-white/70 text-sm font-medium">/ 120</span>
+                  </div>
+                  <span className="inline-block px-3 py-1.5 rounded-lg text-xl font-extrabold bg-white/20 backdrop-blur-sm">
+                    {score.level.label}
+                  </span>
+                </div>
+                <div className="mt-4">
+                  <div className="h-1.5 bg-white/20 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-white/60 rounded-full transition-all duration-700"
+                      style={{ width: `${barWidth}%` }}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* HR breakdown */}
+              <div className="grid grid-cols-3 divide-x divide-border">
+                <div className="p-4 text-center">
+                  <p className="text-[10px] text-muted font-medium tracking-wider uppercase mb-1">安静時HR</p>
+                  <p className="text-xl font-bold text-foreground">{hrData.restingHR}</p>
+                  <p className="text-[10px] text-muted">bpm</p>
+                </div>
+                <div className="p-4 text-center">
+                  <p className="text-[10px] text-muted font-medium tracking-wider uppercase mb-1">最大HR</p>
+                  <p className="text-xl font-bold text-foreground">{hrData.maxHR}</p>
+                  <p className="text-[10px] text-muted">bpm</p>
+                </div>
+                <div className="p-4 text-center">
+                  <p className="text-[10px] text-muted font-medium tracking-wider uppercase mb-1">リカバリー</p>
+                  <p className={`text-xl font-bold ${getScoreAccent(score.totalScore)}`}>{score.recoveryAmount}</p>
+                  <p className="text-[10px] text-muted">bpm</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Feedback */}
+            <div className="rounded-2xl border border-border bg-card p-5 space-y-3">
+              <h3 className="text-sm font-bold text-foreground">フィードバック</h3>
+
+              <div className="rounded-lg bg-background p-3">
+                <p className="text-[10px] font-semibold text-clover mb-1">スコア評価</p>
+                <p className="text-sm text-foreground leading-relaxed">{feedback.scoreFeedback}</p>
+              </div>
+
+              <div className="rounded-lg bg-background p-3">
+                <p className="text-[10px] font-semibold text-clover mb-1">リカバリー力</p>
+                <p className="text-sm text-foreground leading-relaxed">{feedback.recoveryFeedback}</p>
+              </div>
+
+              <div className="rounded-lg bg-background p-3">
+                <p className="text-[10px] font-semibold text-clover mb-1">安静時心拍</p>
+                <p className="text-sm text-foreground leading-relaxed">{feedback.restingHRFeedback}</p>
+              </div>
+            </div>
+
+            {/* Action */}
+            <button
+              onClick={() => { setSuccess(false); setSavedResult(null) }}
+              className="w-full rounded-xl bg-clover text-white text-center font-bold py-3.5 hover:bg-clover-dark transition-colors"
+            >
+              次の測定を入力する
+            </button>
+          </div>
+        )
+      })()}
 
       {error && (
         <div className="rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-3 text-sm text-red-600 dark:text-red-400">
@@ -133,7 +242,7 @@ export default function MeasurePage() {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="grid gap-6 lg:grid-cols-[1fr_280px]">
+      {!success && <form onSubmit={handleSubmit} className="grid gap-6 lg:grid-cols-[1fr_280px]">
         <div className="space-y-5">
           {/* Participant + date */}
           <div className="rounded-xl border border-border bg-card p-5 space-y-4">
@@ -307,7 +416,7 @@ export default function MeasurePage() {
             </button>
           </div>
         </div>
-      </form>
+      </form>}
     </div>
   )
 }
