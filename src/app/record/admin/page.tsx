@@ -61,7 +61,7 @@ export default function AdminDashboard() {
               {stats.avgScore > 0 ? stats.avgScore.toFixed(1) : '—'}
             </p>
             {stats.avgScore > 0 && (
-              <span className="text-sm">{getLevel(stats.avgScore).emoji}</span>
+              <span className="text-sm text-muted font-medium">{getLevel(stats.avgScore).label}</span>
             )}
           </div>
         </div>
@@ -83,7 +83,13 @@ export default function AdminDashboard() {
               return (
                 <div key={m.id} className="px-4 py-3 flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <span className="text-lg">{level.emoji}</span>
+                    <span className={`text-xs font-bold px-2 py-0.5 rounded ${
+                      m.total_score >= 100 ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300'
+                      : m.total_score >= 80 ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300'
+                      : m.total_score >= 60 ? 'bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-300'
+                      : m.total_score >= 40 ? 'bg-sky-100 text-sky-700 dark:bg-sky-900/30 dark:text-sky-300'
+                      : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400'
+                    }`}>{level.label}</span>
                     <div>
                       <p className="text-sm font-medium text-foreground">
                         {m.participant?.name || '不明'}

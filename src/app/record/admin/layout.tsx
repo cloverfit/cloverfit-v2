@@ -6,10 +6,11 @@ import Link from 'next/link'
 import type { Instructor } from '@/types/database'
 
 const NAV_ITEMS = [
-  { href: '/record/admin', label: 'ダッシュボード', icon: '📊' },
-  { href: '/record/admin/measure', label: '測定入力', icon: '💓' },
-  { href: '/record/admin/participants', label: '参加者管理', icon: '👥' },
-  { href: '/record/admin/feedback', label: 'フィードバック', icon: '💬' },
+  { href: '/record/admin', label: 'ダッシュボード' },
+  { href: '/record/admin/people', label: '人' },
+  { href: '/record/admin/measure', label: '測定入力' },
+  { href: '/record/admin/participants', label: '参加者管理' },
+  { href: '/record/admin/feedback', label: 'フィードバック' },
 ]
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -40,7 +41,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-              <span className="text-xl">🍀</span>
               <span className="text-lg font-bold text-clover">CloverFit</span>
             </Link>
             <span className="text-xs text-muted bg-clover-light px-2 py-0.5 rounded-full">
@@ -68,13 +68,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center gap-1.5 px-3 py-2.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
+                className={`px-3 py-2.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
                   isActive
                     ? 'border-clover text-clover'
                     : 'border-transparent text-muted hover:text-foreground hover:border-border'
                 }`}
               >
-                <span className="text-base">{item.icon}</span>
                 {item.label}
               </Link>
             )
