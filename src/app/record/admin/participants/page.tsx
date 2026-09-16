@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import type { Participant } from '@/types/database'
+import { ORGANIZATIONS } from '@/lib/organizations'
 
 export default function ParticipantsPage() {
   const [participants, setParticipants] = useState<Participant[]>([])
@@ -116,14 +117,17 @@ export default function ParticipantsPage() {
                 />
               </div>
               <div>
-                <label className="block text-xs font-medium text-muted mb-1">会社・チーム名</label>
-                <input
-                  type="text"
+                <label className="block text-xs font-medium text-muted mb-1">所属</label>
+                <select
                   value={companyName}
                   onChange={e => setCompanyName(e.target.value)}
-                  placeholder="株式会社〇〇"
                   className="w-full rounded-lg border border-border bg-card px-3 py-2 text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-clover/40"
-                />
+                >
+                  <option value="">選択してください</option>
+                  {ORGANIZATIONS.map(org => (
+                    <option key={org.id} value={org.name}>{org.name}</option>
+                  ))}
+                </select>
               </div>
               <div>
                 <label className="block text-xs font-medium text-muted mb-1">生年月日</label>

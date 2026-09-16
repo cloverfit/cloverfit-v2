@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { getLevel } from '@/lib/scoring'
+import { ORGANIZATIONS } from '@/lib/organizations'
 
 interface PersonSummary {
   id: string
@@ -21,6 +22,7 @@ export default function PeoplePage() {
   const [people, setPeople] = useState<PersonSummary[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
+  const [orgFilter, setOrgFilter] = useState('')
 
   useEffect(() => {
     fetch('/api/admin/people')
@@ -45,12 +47,27 @@ export default function PeoplePage() {
     return null
   }
 
-  const filtered = search
-    ? people.filter(p =>
-        p.name.toLowerCase().includes(search.toLowerCase()) ||
-        (p.company_name || '').toLowerCase().includes(search.toLowerCase())
-      )
-    : people
+  const filtered = people.filter(p => {
+    if (orgFilter && p.company_name !== orgFilter) return false
+    if (search) {
+      const q = search.toLowerCase()
+      return p.name.toLowerCase().includes(q) || (p.company_name || '').toLowerCase().includes(q)
+    }
+    return true
+  })
+
+  // Org-level stats
+  const orgStats = orgFilter
+    ? (() => {
+        const orgPeople = people.filter(p => p.company_name === orgFilter)
+        const withScores = orgPeople.filter(p => p.avgScore !== null)
+        const avgAll = withScores.length > 0
+          ? Math.round(withScores.reduce((s, p) => s + (p.avgScore || 0), 0) / withScores.length * 10) / 10
+          : null
+        const totalMeasurements = orgPeople.reduce((s, p) => s + p.measurementCount, 0)
+        return { count: orgPeople.length, avgScore: avgAll, totalMeasurements }
+      })()
+    : null
 
   // Sort: people with measurements first (by latest date desc), then no data
   const sorted = [...filtered].sort((a, b) => {
@@ -67,16 +84,44 @@ export default function PeoplePage() {
         <span className="text-sm text-muted">{people.length}名</span>
       </div>
 
-      {/* Search */}
-      <div>
+      {/* Filters */}
+      <div className="flex flex-col sm:flex-row gap-3">
+        <select
+          value={orgFilter}
+          onChange={e => setOrgFilter(e.target.value)}
+          className="rounded-lg border border-border bg-card px-3 py-2 text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-clover/40"
+        >
+          <option value="">すべての所属</option>
+          {ORGANIZATIONS.map(org => (
+            <option key={org.id} value={org.name}>{org.name}</option>
+          ))}
+        </select>
         <input
           type="text"
           value={search}
           onChange={e => setSearch(e.target.value)}
-          placeholder="名前・チーム名で検索..."
-          className="w-full max-w-sm rounded-lg border border-border bg-card px-3 py-2 text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-clover/40"
+          placeholder="名前で検索..."
+          className="flex-1 max-w-sm rounded-lg border border-border bg-card px-3 py-2 text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-clover/40"
         />
       </div>
+
+      {/* Org stats */}
+      {orgStats && (
+        <div className="grid grid-cols-3 gap-3">
+          <div className="rounded-xl border border-border bg-card p-3 text-center">
+            <p className="text-[10px] text-muted font-medium tracking-wider uppercase mb-0.5">人数</p>
+            <p className="text-xl font-bold text-foreground">{orgStats.count}</p>
+          </div>
+          <div className="rounded-xl border border-border bg-card p-3 text-center">
+            <p className="text-[10px] text-muted font-medium tracking-wider uppercase mb-0.5">平均スコア</p>
+            <p className="text-xl font-bold text-clover">{orgStats.avgScore ?? '—'}</p>
+          </div>
+          <div className="rounded-xl border border-border bg-card p-3 text-center">
+            <p className="text-[10px] text-muted font-medium tracking-wider uppercase mb-0.5">総測定回数</p>
+            <p className="text-xl font-bold text-foreground">{orgStats.totalMeasurements}</p>
+          </div>
+        </div>
+      )}
 
       {loading ? (
         <div className="text-center py-12 text-muted text-sm">読み込み中...</div>

@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { ORGANIZATIONS } from '@/lib/organizations'
 
 export default function RegisterPage() {
   const router = useRouter()
@@ -70,7 +71,7 @@ export default function RegisterPage() {
         <main className="flex-1 flex flex-col items-center justify-center px-4 py-12">
           <div className="max-w-sm w-full text-center space-y-6">
             <div className="w-16 h-16 rounded-full bg-clover-light flex items-center justify-center mx-auto">
-              <span className="text-3xl">🍀</span>
+              <span className="text-lg font-bold text-clover">OK</span>
             </div>
             <div>
               <h2 className="text-xl font-bold text-foreground">登録完了</h2>
@@ -96,7 +97,6 @@ export default function RegisterPage() {
       <header className="border-b border-border bg-card">
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center gap-3">
           <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-            <span className="text-2xl">🍀</span>
             <span className="text-xl font-bold text-clover">CloverFit</span>
           </Link>
           <span className="text-muted text-sm ml-2">新規登録</span>
@@ -176,14 +176,17 @@ export default function RegisterPage() {
               <p className="text-xs text-muted mb-3">以下は任意項目です</p>
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-foreground mb-1">会社・チーム名</label>
-                  <input
-                    type="text"
+                  <label className="block text-sm font-medium text-foreground mb-1">所属</label>
+                  <select
                     value={companyName}
                     onChange={e => setCompanyName(e.target.value)}
-                    placeholder="株式会社〇〇"
-                    className="w-full rounded-lg border border-border bg-card px-4 py-3 text-foreground placeholder:text-muted/50 focus:outline-none focus:ring-2 focus:ring-clover/40 focus:border-clover transition-colors"
-                  />
+                    className="w-full rounded-lg border border-border bg-card px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-clover/40 focus:border-clover transition-colors"
+                  >
+                    <option value="">選択してください</option>
+                    {ORGANIZATIONS.map(org => (
+                      <option key={org.id} value={org.name}>{org.name}</option>
+                    ))}
+                  </select>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-foreground mb-1">生年月日</label>
