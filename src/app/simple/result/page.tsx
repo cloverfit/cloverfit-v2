@@ -26,116 +26,100 @@ function ScoreResult() {
   const result = calculateScore(hrData)
   const feedback = generateAutoFeedback(hrData, result.totalScore)
 
-  const scoreColor =
-    result.totalScore >= 80
-      ? 'text-clover'
-      : result.totalScore >= 60
-        ? 'text-green-600 dark:text-green-400'
-        : result.totalScore >= 40
-          ? 'text-yellow-600 dark:text-yellow-400'
-          : 'text-orange-600 dark:text-orange-400'
+  function getScoreGradient(score: number): string {
+    if (score >= 100) return 'from-amber-400 to-yellow-500'
+    if (score >= 80) return 'from-emerald-500 to-green-600'
+    if (score >= 60) return 'from-teal-400 to-emerald-500'
+    if (score >= 40) return 'from-sky-400 to-blue-500'
+    return 'from-slate-400 to-slate-500'
+  }
+
+  function getScoreAccent(score: number): string {
+    if (score >= 100) return 'text-amber-500'
+    if (score >= 80) return 'text-emerald-600 dark:text-emerald-400'
+    if (score >= 60) return 'text-teal-600 dark:text-teal-400'
+    if (score >= 40) return 'text-sky-600 dark:text-sky-400'
+    return 'text-slate-500'
+  }
+
+  const scoreBarWidth = Math.min((result.totalScore / 120) * 100, 100)
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {/* Score card */}
-      <div className="rounded-xl border border-border bg-card p-6 text-center">
-        <p className="text-muted text-sm mb-2">あなたのスコア</p>
-        <div className={`text-6xl font-bold ${scoreColor} mb-2`}>
-          {result.totalScore}
+      <div className="rounded-2xl border border-border bg-card overflow-hidden">
+        <div className={`bg-gradient-to-r ${getScoreGradient(result.totalScore)} p-6 text-white`}>
+          <p className="text-white/80 text-xs font-medium tracking-wider uppercase">Your Score</p>
+          <div className="flex items-start justify-between mt-1">
+            <div className="flex items-baseline gap-2">
+              <span className="text-6xl font-extrabold tracking-tighter">{result.totalScore}</span>
+              <span className="text-white/70 text-sm font-medium">/ 120</span>
+            </div>
+            <span className="inline-block px-3 py-1.5 rounded-lg text-xl font-extrabold bg-white/20 backdrop-blur-sm">
+              {result.level.label}
+            </span>
+          </div>
+          <div className="mt-4">
+            <div className="h-1.5 bg-white/20 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-white/60 rounded-full transition-all duration-700"
+                style={{ width: `${scoreBarWidth}%` }}
+              />
+            </div>
+          </div>
         </div>
-        <div className="text-2xl mb-1">{result.level.emoji}</div>
-        <div className="text-lg font-medium text-foreground">{result.level.label}</div>
-      </div>
 
-      {/* Details */}
-      <div className="rounded-xl border border-border bg-card p-5">
-        <h3 className="text-sm font-bold text-foreground mb-3">測定データ</h3>
-        <div className="grid grid-cols-3 gap-3 text-center">
-          <div>
-            <p className="text-xs text-muted">安静時HR</p>
+        {/* HR breakdown */}
+        <div className="grid grid-cols-3 divide-x divide-border">
+          <div className="p-4 text-center">
+            <p className="text-[10px] text-muted font-medium tracking-wider uppercase mb-1">安静時HR</p>
             <p className="text-xl font-bold text-foreground">{restingHR}</p>
-            <p className="text-xs text-muted">bpm</p>
+            <p className="text-[10px] text-muted">bpm</p>
           </div>
-          <div>
-            <p className="text-xs text-muted">最大HR</p>
+          <div className="p-4 text-center">
+            <p className="text-[10px] text-muted font-medium tracking-wider uppercase mb-1">最大HR</p>
             <p className="text-xl font-bold text-foreground">{maxHR}</p>
-            <p className="text-xs text-muted">bpm</p>
+            <p className="text-[10px] text-muted">bpm</p>
           </div>
-          <div>
-            <p className="text-xs text-muted">回復時HR</p>
-            <p className="text-xl font-bold text-foreground">{recoveryHR}</p>
-            <p className="text-xs text-muted">bpm</p>
+          <div className="p-4 text-center">
+            <p className="text-[10px] text-muted font-medium tracking-wider uppercase mb-1">リカバリー</p>
+            <p className={`text-xl font-bold ${getScoreAccent(result.totalScore)}`}>{result.recoveryAmount}</p>
+            <p className="text-[10px] text-muted">bpm</p>
           </div>
-        </div>
-        <div className="mt-4 pt-3 border-t border-border">
-          <div className="flex justify-between items-center text-sm">
-            <span className="text-muted">リカバリー量</span>
-            <span className="font-bold text-foreground">{result.recoveryAmount} bpm</span>
-          </div>
-          <p className="text-xs text-muted mt-1">
-            計算式: 100 - 安静時HR({restingHR}) + リカバリー量({result.recoveryAmount}) = {result.totalScore}
-          </p>
         </div>
       </div>
 
       {/* Feedback */}
-      <div className="rounded-xl border border-border bg-card p-5 space-y-4">
+      <div className="rounded-2xl border border-border bg-card p-5 space-y-3">
         <h3 className="text-sm font-bold text-foreground">フィードバック</h3>
 
-        <div>
-          <p className="text-xs font-medium text-clover mb-1">スコア評価</p>
+        <div className="rounded-lg bg-background p-3">
+          <p className="text-[10px] font-semibold text-clover mb-1">スコア評価</p>
           <p className="text-sm text-foreground leading-relaxed">{feedback.scoreFeedback}</p>
         </div>
 
-        <div>
-          <p className="text-xs font-medium text-clover mb-1">リカバリー力</p>
+        <div className="rounded-lg bg-background p-3">
+          <p className="text-[10px] font-semibold text-clover mb-1">リカバリー力</p>
           <p className="text-sm text-foreground leading-relaxed">{feedback.recoveryFeedback}</p>
         </div>
 
-        <div>
-          <p className="text-xs font-medium text-clover mb-1">安静時心拍</p>
+        <div className="rounded-lg bg-background p-3">
+          <p className="text-[10px] font-semibold text-clover mb-1">安静時心拍</p>
           <p className="text-sm text-foreground leading-relaxed">{feedback.restingHRFeedback}</p>
         </div>
       </div>
 
-      {/* Score guide */}
-      <div className="rounded-xl border border-border bg-card p-5">
-        <h3 className="text-sm font-bold text-foreground mb-3">スコアレベル一覧</h3>
-        <div className="space-y-2">
-          {[
-            { emoji: '🍀👑', label: 'Master', range: '100+', desc: 'トップアスリート級' },
-            { emoji: '☘️', label: '三葉 Excellent', range: '80-99', desc: '非常に良好' },
-            { emoji: '🌿', label: '二葉 Good', range: '60-79', desc: '良好' },
-            { emoji: '🌱', label: '一葉 Average', range: '40-59', desc: '標準的' },
-            { emoji: '🌰', label: 'Seed', range: '0-39', desc: '改善の余地あり' },
-          ].map(level => (
-            <div
-              key={level.label}
-              className={`flex items-center gap-3 text-sm rounded-lg px-3 py-2 ${
-                result.level.label === level.label
-                  ? 'bg-clover-light border border-clover/30'
-                  : ''
-              }`}
-            >
-              <span className="text-lg w-8">{level.emoji}</span>
-              <span className="font-medium text-foreground flex-1">{level.label}</span>
-              <span className="text-muted text-xs">{level.range}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-
       {/* Actions */}
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-3 pt-1">
         <Link
           href="/simple"
-          className="block w-full rounded-lg bg-clover text-white text-center font-bold py-3 hover:bg-clover-dark transition-colors"
+          className="block w-full rounded-xl bg-clover text-white text-center font-bold py-3.5 hover:bg-clover-dark transition-colors"
         >
           もう一度測定する
         </Link>
         <Link
           href="/record/login"
-          className="block w-full rounded-lg border border-clover text-clover text-center font-medium py-3 hover:bg-clover-light transition-colors"
+          className="block w-full rounded-xl border border-clover text-clover text-center font-medium py-3 hover:bg-clover-light transition-colors"
         >
           記録モードで管理する
         </Link>
@@ -143,7 +127,7 @@ function ScoreResult() {
           href="/"
           className="block text-center text-sm text-muted hover:text-foreground transition-colors"
         >
-          トップに戻る
+          ← トップに戻る
         </Link>
       </div>
     </div>
@@ -153,11 +137,9 @@ function ScoreResult() {
 export default function SimpleResultPage() {
   return (
     <div className="flex flex-col min-h-screen bg-background">
-      {/* Header */}
       <header className="border-b border-border bg-card">
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center gap-3">
           <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-            <span className="text-2xl">🍀</span>
             <span className="text-xl font-bold text-clover">CloverFit</span>
           </Link>
           <span className="text-muted text-sm ml-2">結果</span>
