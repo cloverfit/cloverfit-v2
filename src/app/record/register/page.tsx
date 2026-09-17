@@ -123,10 +123,9 @@ export default function RegisterPage() {
                 type="text"
                 value={instructorCode}
                 onChange={e => setInstructorCode(e.target.value.toUpperCase().slice(0, 6))}
-                placeholder="CLV001"
                 required
                 maxLength={6}
-                className="w-full rounded-lg border border-border bg-card px-4 py-3 text-foreground text-lg tracking-[0.3em] text-center uppercase placeholder:text-muted/50 placeholder:tracking-normal focus:outline-none focus:ring-2 focus:ring-clover/40 focus:border-clover transition-colors"
+                className="w-full rounded-lg border border-border bg-card px-4 py-3 text-foreground text-lg tracking-[0.3em] text-center uppercase focus:outline-none focus:ring-2 focus:ring-clover/40 focus:border-clover transition-colors"
               />
               <p className="text-xs text-muted mt-1">インストラクターから共有されたコードを入力</p>
             </div>
