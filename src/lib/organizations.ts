@@ -7,6 +7,7 @@ export interface Organization {
 }
 
 export const ORGANIZATIONS: Organization[] = [
-  { id: 'cloverfit', name: 'CloverFit' },
-  { id: 'ntt-docomo-wellbeing', name: 'NTTdocomo ウェルビーイング推進室' },
+  { id: 'cloverfit', name: 'クローバーフィット' },
+  { id: 'docomo-group', name: 'ドコモグループ社員' },
+  { id: 'wellbeing-office', name: 'ウェルビーイング推進室' },
 ]
