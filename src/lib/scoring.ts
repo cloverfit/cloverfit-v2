@@ -51,11 +51,11 @@ export function calculateScore(hr: HRData, subjective?: SubjectiveData): ScoreRe
 
 // レベル判定
 const LEVELS: ScoreLevel[] = [
-  { name: 'a_plus', emoji: '', label: 'A+', min: 100 },
-  { name: 'a', emoji: '', label: 'A', min: 80 },
-  { name: 'b', emoji: '', label: 'B', min: 60 },
-  { name: 'c', emoji: '', label: 'C', min: 40 },
-  { name: 'd', emoji: '', label: 'D', min: 0 },
+  { name: 'master', emoji: '🌟', label: 'Master', min: 100 },
+  { name: 'expert', emoji: '💪', label: 'Expert', min: 80 },
+  { name: 'standard', emoji: '👍', label: 'Standard', min: 60 },
+  { name: 'beginner', emoji: '🌱', label: 'Beginner', min: 40 },
+  { name: 'starter', emoji: '🔰', label: 'Starter', min: 0 },
 ]
 
 export function getLevel(score: number): ScoreLevel {
