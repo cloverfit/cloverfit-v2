@@ -259,17 +259,6 @@ export default function SelfMeasurePage() {
               </div>
             </div>
 
-            {/* 入力完了インジケーター（スコアは見せない） */}
-            {preview && (
-              <div className="rounded-xl border-2 border-clover/30 bg-gradient-to-br from-clover-light/30 to-card p-4 text-center">
-                <div className="flex items-center justify-center gap-2">
-                  <CloverIcon leaves={4} size={20} className="text-clover" />
-                  <span className="text-sm font-semibold text-clover-dark">心拍データ入力済み</span>
-                </div>
-                <p className="text-xs text-muted mt-1">保存するとスコアが表示されます</p>
-              </div>
-            )}
-
             {/* Subjective inputs */}
             <div className="rounded-xl border border-border bg-card p-5 space-y-4">
               <h3 className="text-xs font-semibold text-muted tracking-wider uppercase">
