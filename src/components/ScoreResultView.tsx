@@ -95,8 +95,8 @@ export default function ScoreResultView({
   const radius = 82
   const strokeWidth = 16
   const circumference = 2 * Math.PI * radius
-  const progress = Math.min(score.totalScore / 120, 1)
-  const strokeDashoffset = circumference * (1 - progress)
+  const animatedProgress = Math.min(displayScore / 120, 1)
+  const strokeDashoffset = circumference * (1 - animatedProgress)
   const ringColors = getRingColors(score.totalScore)
   const ringBg = getRingBg(score.totalScore)
   const gradientId = 'scoreGradient'
@@ -173,7 +173,7 @@ export default function ScoreResultView({
                 strokeDasharray={circumference}
                 strokeDashoffset={strokeDashoffset}
                 filter={`url(#${glowId})`}
-                className="transition-all duration-1000 ease-out"
+                className=""
               />
 
               {/* 内側の細いアクセントリング */}
