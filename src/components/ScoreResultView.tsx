@@ -13,20 +13,19 @@ interface ScoreResultViewProps {
   secondaryAction?: React.ReactNode
 }
 
-function getRingColor(s: number): string {
-  if (s >= 100) return '#2d8a56' // clover-dark
-  if (s >= 80) return '#3a9d6a'
-  if (s >= 60) return '#5bb585'
-  if (s >= 40) return '#8ecfaa'
-  return '#b8dfc9'
+function getRingColors(s: number): { start: string; end: string } {
+  if (s >= 100) return { start: '#2d8a56', end: '#1a6b3f' }
+  if (s >= 80) return { start: '#3a9d6a', end: '#2d8a56' }
+  if (s >= 60) return { start: '#5bb585', end: '#3a9d6a' }
+  if (s >= 40) return { start: '#8ecfaa', end: '#5bb585' }
+  return { start: '#b8dfc9', end: '#8ecfaa' }
 }
 
 function getRingBg(s: number): string {
-  if (s >= 100) return '#e8f5ed'
-  if (s >= 80) return '#edf7f1'
-  if (s >= 60) return '#f0f9f4'
-  if (s >= 40) return '#f5fbf7'
-  return '#f8fcfa'
+  if (s >= 80) return '#e8f5ed'
+  if (s >= 60) return '#edf7f1'
+  if (s >= 40) return '#f0f9f4'
+  return '#f5fbf7'
 }
 
 function getAccentClass(s: number): string {
@@ -59,55 +58,120 @@ export default function ScoreResultView({
   nextLabel,
   secondaryAction,
 }: ScoreResultViewProps) {
-  const radius = 88
-  const strokeWidth = 10
+  const radius = 82
+  const strokeWidth = 16
   const circumference = 2 * Math.PI * radius
   const progress = Math.min(score.totalScore / 120, 1)
   const strokeDashoffset = circumference * (1 - progress)
-  const ringColor = getRingColor(score.totalScore)
+  const ringColors = getRingColors(score.totalScore)
   const ringBg = getRingBg(score.totalScore)
+  const gradientId = 'scoreGradient'
+  const glowId = 'scoreGlow'
+
+  // 目盛り線の生成（120点満点を12分割）
+  const tickCount = 24
+  const ticks = Array.from({ length: tickCount }, (_, i) => {
+    const angle = (i / tickCount) * 360 - 90
+    const isMajor = i % 2 === 0
+    const outerR = 98
+    const innerR = isMajor ? 93 : 95
+    const rad = (angle * Math.PI) / 180
+    return {
+      x1: 100 + outerR * Math.cos(rad),
+      y1: 100 + outerR * Math.sin(rad),
+      x2: 100 + innerR * Math.cos(rad),
+      y2: 100 + innerR * Math.sin(rad),
+      isMajor,
+    }
+  })
 
   return (
     <div className="space-y-5">
       {/* スコア表示 */}
-      <div className="rounded-2xl border border-border bg-card p-8">
+      <div className="rounded-2xl border border-border bg-card px-6 pt-8 pb-6">
         {participantName && (
-          <p className="text-center text-sm font-bold text-foreground mb-4">{participantName} さんの結果</p>
+          <p className="text-center text-sm font-bold text-foreground mb-5">{participantName} さんの結果</p>
         )}
         <div className="flex justify-center">
-          <div className="relative w-[200px] h-[200px]">
+          <div className="relative w-[220px] h-[220px]">
             <svg viewBox="0 0 200 200" className="w-full h-full -rotate-90">
+              <defs>
+                <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor={ringColors.start} />
+                  <stop offset="100%" stopColor={ringColors.end} />
+                </linearGradient>
+                <filter id={glowId}>
+                  <feGaussianBlur stdDeviation="3" result="blur" />
+                  <feMerge>
+                    <feMergeNode in="blur" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
+              </defs>
+
+              {/* 目盛り */}
+              {ticks.map((t, i) => (
+                <line
+                  key={i}
+                  x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2}
+                  stroke={ringBg}
+                  strokeWidth={t.isMajor ? 1.5 : 0.8}
+                  opacity={t.isMajor ? 0.6 : 0.3}
+                />
+              ))}
+
+              {/* 背景リング（溝） */}
               <circle
-                cx="100"
-                cy="100"
-                r={radius}
+                cx="100" cy="100" r={radius}
                 fill="none"
                 stroke={ringBg}
                 strokeWidth={strokeWidth}
+                opacity={0.8}
               />
+
+              {/* メインプログレスリング */}
               <circle
-                cx="100"
-                cy="100"
-                r={radius}
+                cx="100" cy="100" r={radius}
                 fill="none"
-                stroke={ringColor}
+                stroke={`url(#${gradientId})`}
                 strokeWidth={strokeWidth}
                 strokeLinecap="round"
                 strokeDasharray={circumference}
                 strokeDashoffset={strokeDashoffset}
+                filter={`url(#${glowId})`}
                 className="transition-all duration-1000 ease-out"
               />
+
+              {/* 内側の細いアクセントリング */}
+              <circle
+                cx="100" cy="100" r={radius - strokeWidth / 2 - 4}
+                fill="none"
+                stroke={ringColors.start}
+                strokeWidth={0.5}
+                opacity={0.2}
+              />
             </svg>
+
+            {/* 中央のスコア表示 */}
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-[10px] font-bold text-muted tracking-widest">スコア</span>
-              <span className={`text-5xl font-extrabold ${getAccentClass(score.totalScore)}`}>{score.totalScore}</span>
-              <span className="mt-1 inline-flex items-center gap-1 px-3 py-0.5 rounded-full text-xs font-bold bg-background border border-border text-foreground">
-                <CloverIcon leaves={score.level.leaves} size={14} className="text-clover" />
-                {score.level.label}
+              <span className={`text-6xl font-extrabold tracking-tight leading-none ${getAccentClass(score.totalScore)}`}>
+                {score.totalScore}
               </span>
+              <span className="text-[10px] font-bold text-muted tracking-[0.2em] mt-1">SCORE</span>
             </div>
           </div>
         </div>
+
+        {/* レベルバッジ */}
+        <div className="flex justify-center mt-3">
+          <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-bold bg-clover-light/40 border border-clover/20 text-clover-dark">
+            <CloverIcon leaves={score.level.leaves} size={16} className="text-clover" />
+            {score.level.label}
+          </span>
+        </div>
+
+        {/* スコア / 120 表記 */}
+        <p className="text-center text-xs text-muted mt-2">{score.totalScore} / 120</p>
       </div>
 
       {/* 客観データからのフィードバック */}
