@@ -336,23 +336,17 @@ export default function ScoreResultView({
             <h3 className="text-sm font-bold text-foreground">心と体のバランス</h3>
           </div>
 
-          {/* スコア比較バー */}
+          {/* 比較バー */}
           <div className="px-5 pb-4">
             <div className="rounded-xl bg-background border border-border p-4 space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-medium text-muted">客観（心拍データ）</span>
-                <span className="text-sm font-bold text-clover-dark">{score.totalScore} 点</span>
-              </div>
+              <p className="text-xs font-medium text-muted">心拍データ（客観）</p>
               <div className="w-full h-2 rounded-full bg-clover-light/30">
                 <div
                   className="h-2 rounded-full bg-clover transition-all duration-700"
                   style={{ width: `${Math.min(score.totalScore / 120 * 100, 100)}%` }}
                 />
               </div>
-              <div className="flex items-center justify-between mt-2">
-                <span className="text-xs font-medium text-muted">主観（体感コンディション）</span>
-                <span className="text-sm font-bold text-amber-600">{score.subjectiveScore.toFixed(1)} / 5.0</span>
-              </div>
+              <p className="text-xs font-medium text-muted mt-2">体の実感（主観）</p>
               <div className="w-full h-2 rounded-full bg-amber-100">
                 <div
                   className="h-2 rounded-full bg-amber-500 transition-all duration-700"

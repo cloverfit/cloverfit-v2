@@ -259,21 +259,14 @@ export default function SelfMeasurePage() {
               </div>
             </div>
 
-            {/* Live preview */}
+            {/* 入力完了インジケーター（スコアは見せない） */}
             {preview && (
-              <div className="rounded-xl border-2 border-clover/30 bg-gradient-to-br from-clover-light/30 to-card p-5 text-center">
-                <p className="text-xs text-muted font-medium tracking-wider uppercase mb-2">あなたのスコア</p>
-                <div className="text-5xl font-extrabold text-clover tracking-tighter">{preview.totalScore}</div>
-                <div className="flex items-center justify-center gap-2 mt-1">
-                  <CloverIcon leaves={preview.level.leaves} size={20} className="text-clover" />
-                  <span className="text-sm font-semibold text-foreground">{preview.level.label}</span>
+              <div className="rounded-xl border-2 border-clover/30 bg-gradient-to-br from-clover-light/30 to-card p-4 text-center">
+                <div className="flex items-center justify-center gap-2">
+                  <CloverIcon leaves={4} size={20} className="text-clover" />
+                  <span className="text-sm font-semibold text-clover-dark">心拍データ入力済み</span>
                 </div>
-                <div className="mt-3 flex items-center justify-center gap-4 text-xs text-muted">
-                  <span>リカバリー量: <strong className="text-foreground">{preview.recoveryAmount}</strong> bpm</span>
-                  {preview.subjectiveScore !== null && (
-                    <span>主観: <strong className="text-foreground">{preview.subjectiveScore.toFixed(1)}</strong> / 5.0</span>
-                  )}
-                </div>
+                <p className="text-xs text-muted mt-1">保存するとスコアが表示されます</p>
               </div>
             )}
 
