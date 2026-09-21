@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect, useState, useRef } from 'react'
 import type { ScoreResult, AutoFeedback } from '@/lib/scoring'
 import CloverIcon from '@/components/CloverIcon'
 
@@ -58,6 +59,39 @@ export default function ScoreResultView({
   nextLabel,
   secondaryAction,
 }: ScoreResultViewProps) {
+  // カウントアップアニメーション
+  const [displayScore, setDisplayScore] = useState(0)
+  const [animationDone, setAnimationDone] = useState(false)
+  const animationRef = useRef<number | null>(null)
+
+  useEffect(() => {
+    const target = score.totalScore
+    const duration = 1200 // ms
+    const startTime = performance.now()
+
+    // easeOutExpo: 最初は速く、最後はゆっくり（期待感を煽る）
+    const easeOutExpo = (t: number) => t === 1 ? 1 : 1 - Math.pow(2, -10 * t)
+
+    const animate = (now: number) => {
+      const elapsed = now - startTime
+      const progress = Math.min(elapsed / duration, 1)
+      const eased = easeOutExpo(progress)
+      const current = Math.round(eased * target)
+      setDisplayScore(current)
+
+      if (progress < 1) {
+        animationRef.current = requestAnimationFrame(animate)
+      } else {
+        setAnimationDone(true)
+      }
+    }
+
+    animationRef.current = requestAnimationFrame(animate)
+    return () => {
+      if (animationRef.current) cancelAnimationFrame(animationRef.current)
+    }
+  }, [score.totalScore])
+
   const radius = 82
   const strokeWidth = 16
   const circumference = 2 * Math.PI * radius
@@ -154,8 +188,11 @@ export default function ScoreResultView({
 
             {/* 中央のスコア表示 */}
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className={`text-6xl font-extrabold tracking-tight leading-none ${getAccentClass(score.totalScore)}`}>
-                {score.totalScore}
+              <span
+                className={`text-6xl font-extrabold tracking-tight leading-none transition-colors duration-500 ${getAccentClass(displayScore)}`}
+                style={{ fontVariantNumeric: 'tabular-nums' }}
+              >
+                {displayScore}
               </span>
               <span className="text-[10px] font-bold text-muted tracking-[0.2em] mt-1">SCORE</span>
             </div>
@@ -171,7 +208,9 @@ export default function ScoreResultView({
         </div>
 
         {/* スコア / 120 表記 */}
-        <p className="text-center text-xs text-muted mt-2">{score.totalScore} / 120</p>
+        <p className="text-center text-xs text-muted mt-2" style={{ fontVariantNumeric: 'tabular-nums' }}>
+          {displayScore} / 120
+        </p>
       </div>
 
       {/* 客観データからのフィードバック */}
