@@ -25,7 +25,7 @@ function ScoreResult() {
 
   const hrData = { restingHR, maxHR, recoveryHR }
   const result = calculateScore(hrData)
-  const feedback = generateAutoFeedback(hrData, result.totalScore)
+  const feedback = generateAutoFeedback(hrData, result.totalScore, undefined, result.subjectiveScore)
 
   return (
     <ScoreResultView

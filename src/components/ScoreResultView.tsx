@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState, useRef } from 'react'
-import type { ScoreResult, AutoFeedback } from '@/lib/scoring'
+import type { ScoreResult, AutoFeedback, AlignmentFeedback } from '@/lib/scoring'
 import CloverIcon from '@/components/CloverIcon'
 
 interface ScoreResultViewProps {
@@ -328,26 +328,77 @@ export default function ScoreResultView({
         </div>
       </div>
 
-      {/* 主観データからのフィードバック */}
-      {score.subjectiveScore !== null && (
-        <div className="rounded-2xl border border-border bg-card p-5 space-y-3">
-          <div className="flex items-center gap-2">
+      {/* 主観×客観 クロス分析 */}
+      {feedback.alignmentFeedback && score.subjectiveScore !== null && (
+        <div className="rounded-2xl border border-border bg-card overflow-hidden">
+          <div className="flex items-center gap-2 px-5 pt-5 pb-3">
             <div className="w-1 h-5 rounded-full bg-amber-500" />
-            <h3 className="text-sm font-bold text-foreground">主観データからのフィードバック</h3>
+            <h3 className="text-sm font-bold text-foreground">心と体のバランス</h3>
           </div>
-          <div className="rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 p-4">
-            <div className="flex items-baseline gap-2 mb-2">
-              <span className="text-xs text-amber-700 dark:text-amber-300 font-medium">主観スコア</span>
-              <span className="text-2xl font-extrabold text-amber-600 dark:text-amber-400">{score.subjectiveScore.toFixed(1)}</span>
-              <span className="text-xs text-amber-600/70 dark:text-amber-400/70">/ 5.0</span>
+
+          {/* スコア比較バー */}
+          <div className="px-5 pb-4">
+            <div className="rounded-xl bg-background border border-border p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-medium text-muted">客観（心拍データ）</span>
+                <span className="text-sm font-bold text-clover-dark">{score.totalScore} 点</span>
+              </div>
+              <div className="w-full h-2 rounded-full bg-clover-light/30">
+                <div
+                  className="h-2 rounded-full bg-clover transition-all duration-700"
+                  style={{ width: `${Math.min(score.totalScore / 120 * 100, 100)}%` }}
+                />
+              </div>
+              <div className="flex items-center justify-between mt-2">
+                <span className="text-xs font-medium text-muted">主観（体感コンディション）</span>
+                <span className="text-sm font-bold text-amber-600">{score.subjectiveScore.toFixed(1)} / 5.0</span>
+              </div>
+              <div className="w-full h-2 rounded-full bg-amber-100">
+                <div
+                  className="h-2 rounded-full bg-amber-500 transition-all duration-700"
+                  style={{ width: `${(score.subjectiveScore / 5) * 100}%` }}
+                />
+              </div>
             </div>
-            <p className="text-sm text-amber-800 dark:text-amber-200 leading-relaxed">
-              {score.subjectiveScore >= 4
-                ? '主観的なコンディションも良好です。心身ともに充実した状態と言えます。'
-                : score.subjectiveScore >= 3
-                  ? '主観的なコンディションは平均的です。客観データと合わせて総合的に判断しましょう。'
-                  : '主観的には疲労を感じている状態です。十分な休養と睡眠を心がけてください。'}
-            </p>
+          </div>
+
+          {/* 乖離タイプ表示 */}
+          <div className="px-5 pb-4">
+            <div className={`rounded-xl p-4 border ${
+              feedback.alignmentFeedback.type === 'aligned-high'
+                ? 'bg-clover-light/30 border-clover/20'
+                : feedback.alignmentFeedback.type === 'aligned-low'
+                  ? 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800'
+                  : feedback.alignmentFeedback.type === 'body-ahead'
+                    ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800'
+                    : feedback.alignmentFeedback.type === 'mind-ahead'
+                      ? 'bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800'
+                      : 'bg-background border-border'
+            }`}>
+              <p className={`text-sm font-bold mb-1 ${
+                feedback.alignmentFeedback.type === 'aligned-high'
+                  ? 'text-clover-dark'
+                  : feedback.alignmentFeedback.type === 'aligned-low'
+                    ? 'text-red-700 dark:text-red-300'
+                    : feedback.alignmentFeedback.type === 'body-ahead'
+                      ? 'text-blue-700 dark:text-blue-300'
+                      : feedback.alignmentFeedback.type === 'mind-ahead'
+                        ? 'text-amber-700 dark:text-amber-300'
+                        : 'text-foreground'
+              }`}>
+                {feedback.alignmentFeedback.title}
+              </p>
+              <p className="text-xs text-muted font-medium mb-2">{feedback.alignmentFeedback.summary}</p>
+              <p className="text-sm text-foreground leading-relaxed">{feedback.alignmentFeedback.detail}</p>
+            </div>
+          </div>
+
+          {/* アドバイス */}
+          <div className="px-5 pb-5">
+            <div className="rounded-lg bg-background p-3">
+              <p className="text-[10px] font-semibold text-amber-600 mb-1">おすすめ</p>
+              <p className="text-sm text-foreground leading-relaxed">{feedback.alignmentFeedback.advice}</p>
+            </div>
           </div>
         </div>
       )}

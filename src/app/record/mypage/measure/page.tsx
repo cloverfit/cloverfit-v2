@@ -77,7 +77,7 @@ export default function SelfMeasurePage() {
     setSuccess(false)
 
     const hrData = { restingHR: Number(restingHR), maxHR: Number(maxHR), recoveryHR: Number(recoveryHR) }
-    const autoFeedback = generateAutoFeedback(hrData, preview.totalScore)
+    const autoFeedback = generateAutoFeedback(hrData, preview.totalScore, undefined, preview.subjectiveScore)
 
     try {
       const res = await fetch('/api/measurements', {
@@ -102,6 +102,7 @@ export default function SelfMeasurePage() {
             score_feedback: autoFeedback.scoreFeedback,
             recovery_feedback: autoFeedback.recoveryFeedback,
             trend_feedback: autoFeedback.trendFeedback || null,
+            alignment_feedback: autoFeedback.alignmentFeedback || null,
           },
         }),
       })

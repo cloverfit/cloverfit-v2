@@ -80,12 +80,23 @@ export interface AutoFeedback {
   recoveryFeedback: string
   restingHRFeedback: string
   trendFeedback?: string
+  alignmentFeedback?: AlignmentFeedback
+}
+
+// 主観×客観の乖離分析
+export interface AlignmentFeedback {
+  type: 'aligned-high' | 'aligned-mid' | 'aligned-low' | 'body-ahead' | 'mind-ahead'
+  title: string
+  summary: string
+  detail: string
+  advice: string
 }
 
 export function generateAutoFeedback(
   hr: HRData,
   score: number,
-  previousScore?: number
+  previousScore?: number,
+  subjectiveScore?: number | null
 ): AutoFeedback {
   const recoveryAmount = hr.maxHR - hr.recoveryHR
 
@@ -146,5 +157,85 @@ export function generateAutoFeedback(
     }
   }
 
-  return { scoreFeedback, recoveryFeedback, restingHRFeedback, trendFeedback }
+  // ── 主観×客観の乖離分析 ──
+  // 客観スコア（CloverFitスコア）と主観スコア（1-5）をクロスして状態を判定
+  let alignmentFeedback: AlignmentFeedback | undefined
+  if (subjectiveScore != null) {
+    // 客観レベル: high(80+), mid(60-79), low(<60)
+    const objLevel = score >= 80 ? 'high' : score >= 60 ? 'mid' : 'low'
+    // 主観レベル: high(4+), mid(3-3.9), low(<3)
+    const subLevel = subjectiveScore >= 4 ? 'high' : subjectiveScore >= 3 ? 'mid' : 'low'
+
+    if (objLevel === 'high' && subLevel === 'high') {
+      alignmentFeedback = {
+        type: 'aligned-high',
+        title: '心身ともに絶好調',
+        summary: '客観データも主観的な実感も、どちらも良好な状態を示しています。',
+        detail: `心拍データが示す自律神経の回復力（スコア${score}点）と、あなた自身が感じるコンディション（主観${subjectiveScore.toFixed(1)}）がしっかり一致しています。体の内側も外側も、いい状態です。`,
+        advice: 'この好調を活かして、少し負荷の高いトレーニングに挑戦するのも良いタイミングです。ただし、好調なときこそ休養とのバランスを忘れずに。',
+      }
+    } else if (objLevel === 'mid' && subLevel === 'mid') {
+      alignmentFeedback = {
+        type: 'aligned-mid',
+        title: '安定したコンディション',
+        summary: '客観・主観ともに標準的な水準です。',
+        detail: `心拍データ（スコア${score}点）と体感コンディション（主観${subjectiveScore.toFixed(1)}）が概ね一致しています。体の感覚と数値が合っているのは、自分の状態をよく把握できている証拠です。`,
+        advice: '週3回の軽い有酸素運動と、質の良い睡眠を意識することで、ここから一段階上に上がれます。小さな積み重ねが大きな差を生みます。',
+      }
+    } else if (objLevel === 'low' && subLevel === 'low') {
+      alignmentFeedback = {
+        type: 'aligned-low',
+        title: 'しっかり休養を取りましょう',
+        summary: '体のデータも実感も、疲労が溜まっていることを示しています。',
+        detail: `心拍データ（スコア${score}点）と体感（主観${subjectiveScore.toFixed(1)}）の両方が低めの状態です。心身ともに疲れが出ている時期かもしれません。`,
+        advice: '今は無理をせず、まずは睡眠時間の確保（7〜9時間）とリラックスできる時間を優先してください。回復してからのトレーニングの方が、効果も高くなります。',
+      }
+    } else if ((objLevel === 'high' || objLevel === 'mid') && subLevel === 'low') {
+      alignmentFeedback = {
+        type: 'body-ahead',
+        title: '体は元気、でも気持ちがついてきていないかも',
+        summary: '心拍データは良好ですが、主観的には疲れを感じています。',
+        detail: `心拍データは好調（スコア${score}点）なのに対し、体感コンディション（主観${subjectiveScore.toFixed(1)}）はやや低めです。メンタル面の疲労やストレス、睡眠の質が影響している可能性があります。`,
+        advice: '体の回復力は維持できているので、心のケアに目を向けてみましょう。十分な睡眠、リラックスできる趣味の時間、人との会話など、気持ちをリフレッシュすることで数値と実感が一致してきます。',
+      }
+    } else if (objLevel === 'low' && (subLevel === 'high' || subLevel === 'mid')) {
+      alignmentFeedback = {
+        type: 'mind-ahead',
+        title: '気分は良いけど、体は少しお疲れかも',
+        summary: '主観的には調子が良いですが、心拍データは疲労のサインを示しています。',
+        detail: `体感では調子が良い（主観${subjectiveScore.toFixed(1)}）ものの、心拍データ（スコア${score}点）は回復が追いついていない状態です。気づかないうちに体に負荷がかかっている可能性があります。`,
+        advice: '調子が良いときこそ要注意。オーバートレーニングや睡眠不足が隠れている場合があります。軽めの運動に切り替えて、体の回復を優先する日を作ってみてください。',
+      }
+    } else {
+      // mid × high/low の中間パターン
+      const gap = (subjectiveScore / 5) * 120 - score
+      if (Math.abs(gap) < 20) {
+        alignmentFeedback = {
+          type: 'aligned-mid',
+          title: 'バランスの取れた状態',
+          summary: '客観データと主観的な実感が概ね一致しています。',
+          detail: `心拍データ（スコア${score}点）と体感コンディション（主観${subjectiveScore.toFixed(1)}）のバランスが取れています。自分の体の状態をしっかり感じ取れていますね。`,
+          advice: '今のペースを維持しつつ、少しずつ運動の強度や頻度を上げていくことで、着実にレベルアップできます。',
+        }
+      } else if (gap > 0) {
+        alignmentFeedback = {
+          type: 'mind-ahead',
+          title: '体感は良好、でもデータは注意信号',
+          summary: '主観的な好調さに対して、心拍データがやや追いついていません。',
+          detail: `体感では好調（主観${subjectiveScore.toFixed(1)}）ですが、心拍データ（スコア${score}点）はもう少し回復の余地がありそうです。`,
+          advice: '気分が良いのは素晴らしいことです。ただ、体のデータが示すサインにも耳を傾けて、休養日を適度に入れましょう。',
+        }
+      } else {
+        alignmentFeedback = {
+          type: 'body-ahead',
+          title: 'データは好調、実感はもう少し',
+          summary: '心拍データは良い状態ですが、体感がまだ追いついていません。',
+          detail: `心拍データ（スコア${score}点）は順調ですが、体感コンディション（主観${subjectiveScore.toFixed(1)}）はやや低め。ストレスや精神的疲労が影響しているかもしれません。`,
+          advice: 'トレーニングの成果は体に表れています。リラックスできる時間を確保して、心もリフレッシュさせましょう。',
+        }
+      }
+    }
+  }
+
+  return { scoreFeedback, recoveryFeedback, restingHRFeedback, trendFeedback, alignmentFeedback }
 }
