@@ -22,7 +22,7 @@ export interface ScoreResult {
 
 export interface ScoreLevel {
   name: string
-  emoji: string
+  leaves: number  // 1-4: クローバーの葉の数でレベル表現
   label: string
   min: number
 }
@@ -51,11 +51,11 @@ export function calculateScore(hr: HRData, subjective?: SubjectiveData): ScoreRe
 
 // レベル判定
 const LEVELS: ScoreLevel[] = [
-  { name: 'master', emoji: '🌟', label: 'Master', min: 100 },
-  { name: 'expert', emoji: '💪', label: 'Expert', min: 80 },
-  { name: 'standard', emoji: '👍', label: 'Standard', min: 60 },
-  { name: 'beginner', emoji: '🌱', label: 'Beginner', min: 40 },
-  { name: 'starter', emoji: '🔰', label: 'Starter', min: 0 },
+  { name: 'master', leaves: 4, label: '最高', min: 100 },
+  { name: 'expert', leaves: 3, label: '優秀', min: 80 },
+  { name: 'standard', leaves: 2, label: '良好', min: 60 },
+  { name: 'beginner', leaves: 1, label: '基礎', min: 40 },
+  { name: 'starter', leaves: 1, label: '入門', min: 0 },
 ]
 
 export function getLevel(score: number): ScoreLevel {

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import type { Participant } from '@/types/database'
 import { calculateScore, generateAutoFeedback, type ScoreResult, type AutoFeedback } from '@/lib/scoring'
 import ScoreResultView from '@/components/ScoreResultView'
+import CloverIcon from '@/components/CloverIcon'
 
 export default function MeasurePage() {
   const [participants, setParticipants] = useState<Participant[]>([])
@@ -304,7 +305,7 @@ export default function MeasurePage() {
               {preview ? (
                 <>
                   <div className="text-5xl font-bold text-clover mb-1">{preview.totalScore}</div>
-                  <div className="text-xl">{preview.level.emoji}</div>
+                  <CloverIcon leaves={preview.level.leaves} size={24} className="text-clover" />
                   <div className="text-sm font-medium text-foreground">{preview.level.label}</div>
                   <div className="mt-3 text-xs text-muted">
                     リカバリー量: {preview.recoveryAmount} bpm

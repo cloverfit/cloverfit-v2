@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import type { MeasurementWithFeedback } from '@/types/database'
 import { getLevel } from '@/lib/scoring'
+import CloverIcon from '@/components/CloverIcon'
 
 export default function FeedbackPage() {
   const [measurements, setMeasurements] = useState<MeasurementWithFeedback[]>([])
@@ -101,7 +102,7 @@ export default function FeedbackPage() {
                 {/* Measurement header */}
                 <div className="px-4 py-3 flex items-center justify-between border-b border-border bg-card">
                   <div className="flex items-center gap-3">
-                    <span className="text-lg">{level.emoji}</span>
+                    <CloverIcon leaves={level.leaves} size={20} className="text-clover" />
                     <div>
                       <p className="text-sm font-medium text-foreground">
                         {m.participant?.name || '不明'}

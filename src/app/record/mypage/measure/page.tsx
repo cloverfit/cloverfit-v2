@@ -6,6 +6,7 @@ import Link from 'next/link'
 import type { Participant } from '@/types/database'
 import { calculateScore, generateAutoFeedback, type ScoreResult, type AutoFeedback } from '@/lib/scoring'
 import ScoreResultView from '@/components/ScoreResultView'
+import CloverIcon from '@/components/CloverIcon'
 
 export default function SelfMeasurePage() {
   const router = useRouter()
@@ -263,7 +264,7 @@ export default function SelfMeasurePage() {
                 <p className="text-xs text-muted font-medium tracking-wider uppercase mb-2">あなたのスコア</p>
                 <div className="text-5xl font-extrabold text-clover tracking-tighter">{preview.totalScore}</div>
                 <div className="flex items-center justify-center gap-2 mt-1">
-                  <span className="text-2xl">{preview.level.emoji}</span>
+                  <CloverIcon leaves={preview.level.leaves} size={20} className="text-clover" />
                   <span className="text-sm font-semibold text-foreground">{preview.level.label}</span>
                 </div>
                 <div className="mt-3 flex items-center justify-center gap-4 text-xs text-muted">
