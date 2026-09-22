@@ -1,45 +1,43 @@
 import Link from 'next/link'
+import CloverFitLogo from '@/components/CloverFitLogo'
 
 export default function LandingPage() {
   return (
     <div className="flex flex-col min-h-screen bg-background">
       {/* Header */}
       <header className="border-b border-border bg-card">
-        <div className="max-w-4xl mx-auto px-4 py-4 flex items-center gap-3">
-          <span className="text-2xl">🍀</span>
-          <h1 className="text-xl font-bold text-clover">CloverFit</h1>
+        <div className="max-w-4xl mx-auto px-4 py-4">
+          <CloverFitLogo size="sm" />
         </div>
       </header>
 
       {/* Hero */}
       <main className="flex-1 flex flex-col items-center justify-center px-4 py-12">
-        <div className="max-w-lg w-full text-center space-y-6">
-          <div className="text-5xl mb-2">🍀</div>
-          <h2 className="text-2xl font-bold text-foreground">
-            心拍リカバリーで見える化する
+        <div className="max-w-lg w-full text-center space-y-5">
+          <CloverFitLogo size="hero" className="justify-center" />
+          <h2 className="text-2xl font-bold text-foreground leading-snug">
+            心拍の回復力から、
             <br />
-            あなたのコンディション
+            今日の調子がわかる。
           </h2>
-          <p className="text-muted text-sm leading-relaxed">
-            CloverFitは心拍データから自律神経の回復力をスコア化し、
-            <br className="hidden sm:inline" />
-            あなたのウェルビーイングを数値で「見える化」します。
+          <p className="text-muted text-sm">
+            3つの心拍数を入れるだけ。
           </p>
         </div>
 
         {/* Two mode cards */}
         <div className="max-w-lg w-full mt-10 grid gap-4 sm:grid-cols-2">
-          {/* Simple mode */}
+          {/* Measure mode */}
           <Link
-            href="/simple"
+            href="/measure"
             className="group block rounded-xl border border-border bg-card p-6 transition-all hover:border-clover hover:shadow-md"
           >
-            <div className="text-3xl mb-3">🌱</div>
+            <CloverFitLogo size="sm" showText={false} className="mb-3" />
             <h3 className="font-bold text-lg text-foreground mb-2">
-              スコアを見てみる
+              測定する
             </h3>
             <p className="text-muted text-sm leading-relaxed">
-              ログイン不要。心拍データを入力するだけで、あなたのコンディションスコアをすぐに確認できます。
+              心拍データを入力して、今のコンディションスコアを確認できます。
             </p>
             <div className="mt-4 text-clover text-sm font-medium group-hover:translate-x-1 transition-transform inline-flex items-center gap-1">
               はじめる
@@ -54,10 +52,10 @@ export default function LandingPage() {
           >
             <div className="text-3xl mb-3">📊</div>
             <h3 className="font-bold text-lg text-foreground mb-2">
-              記録して管理する
+              記録・管理する
             </h3>
             <p className="text-muted text-sm leading-relaxed">
-              測定データを記録・管理。スコア推移やフィードバック、PDFレポートで成長を実感できます。
+              測定データを記録して、スコアの推移やフィードバックを確認できます。
             </p>
             <div className="mt-4 text-clover text-sm font-medium group-hover:translate-x-1 transition-transform inline-flex items-center gap-1">
               ログイン
@@ -79,7 +77,7 @@ export default function LandingPage() {
       {/* Footer */}
       <footer className="border-t border-border bg-card py-4">
         <div className="max-w-4xl mx-auto px-4 text-center text-xs text-muted">
-          &copy; 2024-2026 CloverFit &mdash; Wellbeing Management
+          &copy; 2024-2026 CloverFit
         </div>
       </footer>
     </div>
