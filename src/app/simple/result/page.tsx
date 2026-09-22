@@ -2,6 +2,7 @@
 
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
+import CloverFitLogo from '@/components/CloverFitLogo'
 import { Suspense } from 'react'
 import { calculateScore, generateAutoFeedback } from '@/lib/scoring'
 import ScoreResultView from '@/components/ScoreResultView'
@@ -59,8 +60,8 @@ export default function SimpleResultPage() {
     <div className="flex flex-col min-h-screen bg-background">
       <header className="border-b border-border bg-card">
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center gap-3">
-          <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-            <span className="text-xl font-bold text-clover">CloverFit</span>
+          <Link href="/" className="hover:opacity-80 transition-opacity">
+            <CloverFitLogo size="sm" />
           </Link>
           <span className="text-muted text-sm ml-2">結果</span>
         </div>

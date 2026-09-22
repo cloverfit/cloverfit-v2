@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import CloverFitLogo from '@/components/CloverFitLogo'
 
 type LoginMode = 'participant' | 'instructor'
 
@@ -77,9 +78,8 @@ export default function LoginPage() {
     <div className="flex flex-col min-h-screen bg-background">
       <header className="border-b border-border bg-card">
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center gap-3">
-          <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-            <span className="text-2xl">🍀</span>
-            <span className="text-xl font-bold text-clover">CloverFit</span>
+          <Link href="/" className="hover:opacity-80 transition-opacity">
+            <CloverFitLogo size="sm" />
           </Link>
           <span className="text-muted text-sm ml-2">ログイン</span>
         </div>

@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
+import CloverFitLogo from '@/components/CloverFitLogo'
 import type { Instructor } from '@/types/database'
 
 const NAV_ITEMS = [
@@ -40,8 +41,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <header className="border-b border-border bg-card">
         <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-              <span className="text-lg font-bold text-clover">CloverFit</span>
+            <Link href="/" className="hover:opacity-80 transition-opacity">
+              <CloverFitLogo size="sm" />
             </Link>
             <span className="text-xs text-muted bg-clover-light px-2 py-0.5 rounded-full">
               管理画面

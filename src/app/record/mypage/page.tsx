@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import CloverFitLogo from '@/components/CloverFitLogo'
 import type { Participant, MeasurementWithFeedback } from '@/types/database'
 import { getLevel } from '@/lib/scoring'
 
@@ -86,8 +87,8 @@ export default function MyPage() {
       {/* Header */}
       <header className="border-b border-border bg-card/80 backdrop-blur-sm sticky top-0 z-10">
         <div className="max-w-lg mx-auto px-4 py-3 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-            <span className="text-lg font-bold text-clover tracking-tight">CloverFit</span>
+          <Link href="/" className="hover:opacity-80 transition-opacity">
+            <CloverFitLogo size="sm" />
           </Link>
           <button
             onClick={handleLogout}
