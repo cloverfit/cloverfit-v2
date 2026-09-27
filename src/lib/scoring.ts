@@ -51,11 +51,11 @@ export function calculateScore(hr: HRData, subjective?: SubjectiveData): ScoreRe
 
 // レベル判定
 const LEVELS: ScoreLevel[] = [
-  { name: 'master', leaves: 4, label: '最高', min: 100 },
-  { name: 'expert', leaves: 3, label: '優秀', min: 80 },
-  { name: 'standard', leaves: 2, label: '良好', min: 60 },
-  { name: 'beginner', leaves: 1, label: '基礎', min: 40 },
-  { name: 'starter', leaves: 1, label: '入門', min: 0 },
+  { name: 'master', leaves: 4, label: 'CONGRATULATIONS', min: 100 },
+  { name: 'expert', leaves: 3, label: 'EXCELLENT', min: 80 },
+  { name: 'standard', leaves: 2, label: 'GOOD', min: 60 },
+  { name: 'beginner', leaves: 1, label: 'TIRED', min: 40 },
+  { name: 'starter', leaves: 1, label: 'DANGEROUS', min: 0 },
 ]
 
 export function getLevel(score: number): ScoreLevel {

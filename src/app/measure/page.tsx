@@ -50,6 +50,11 @@ export default function MeasurePage() {
     hrData: { restingHR: number; maxHR: number; recoveryHR: number }
   } | null>(null)
 
+  // 結果が表示されたらページ最上部へ
+  useEffect(() => {
+    if (result) window.scrollTo({ top: 0, behavior: 'smooth' })
+  }, [result])
+
   const age = calcAge(birthDate)
 
   async function handleSubmit(e: React.FormEvent) {

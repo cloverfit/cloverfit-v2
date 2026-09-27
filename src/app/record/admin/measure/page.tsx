@@ -37,6 +37,11 @@ export default function MeasurePage() {
     participantName: string
   } | null>(null)
 
+  // 結果が表示されたらページ最上部へ
+  useEffect(() => {
+    if (savedResult) window.scrollTo({ top: 0, behavior: 'smooth' })
+  }, [savedResult])
+
   useEffect(() => {
     fetch('/api/participants')
       .then(res => res.json())

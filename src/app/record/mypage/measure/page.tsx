@@ -38,6 +38,11 @@ export default function SelfMeasurePage() {
     hrData: { restingHR: number; maxHR: number; recoveryHR: number }
   } | null>(null)
 
+  // 結果が表示されたらページ最上部へ
+  useEffect(() => {
+    if (savedResult) window.scrollTo({ top: 0, behavior: 'smooth' })
+  }, [savedResult])
+
   useEffect(() => {
     const stored = sessionStorage.getItem('participant')
     if (!stored) {
