@@ -55,7 +55,7 @@ const LEVELS: ScoreLevel[] = [
   { name: 'expert', leaves: 3, label: 'EXCELLENT', min: 80 },
   { name: 'standard', leaves: 2, label: 'GOOD', min: 60 },
   { name: 'beginner', leaves: 1, label: 'TIRED', min: 40 },
-  { name: 'starter', leaves: 1, label: 'DANGEROUS', min: 0 },
+  { name: 'starter', leaves: 1, label: 'NEEDS CARE', min: 0 },
 ]
 
 export function getLevel(score: number): ScoreLevel {
