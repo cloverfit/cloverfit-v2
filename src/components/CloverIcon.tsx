@@ -1,5 +1,5 @@
 // CloverFit独自のクローバーアイコン
-// leavesの数（1〜4）に応じて葉を表示
+// ロゴと同じハート型の葉。leavesの数（1〜4）に応じて葉を表示
 
 interface CloverIconProps {
   leaves: number
@@ -7,43 +7,52 @@ interface CloverIconProps {
   className?: string
 }
 
+// 中心(12,12)を先端とし、外側に膨らんで先端に切れ込みが入るハート型の葉。
+// 上向きの葉を定義し、90度ずつ回転させて四つ葉にする。
+const LEAF_PATH =
+  'M12 12 C8.5 11 2.6 9.6 2.6 6.4 C2.6 3 6.1 1.4 8.7 3 ' +
+  'C10.3 4 11.3 5.2 12 6.3 C12.7 5.2 13.7 4 15.3 3 ' +
+  'C17.9 1.4 21.4 3 21.4 6.4 C21.4 9.6 15.5 11 12 12 Z'
+
+// 枚数ごとの葉の配置（葉の向き＝中心から外向き）。
+// 4枚は上下左右に置くと、膨らみが斜めに来てロゴと同じ形になる。
+// 1〜3枚のときも左右対称に見える角度を選ぶ。
+const LEAF_ROTATIONS: Record<number, number[]> = {
+  1: [0],
+  2: [-45, 45],
+  3: [0, 120, 240],
+  4: [0, 90, 180, 270],
+}
+
 export default function CloverIcon({ leaves, size = 20, className = '' }: CloverIconProps) {
   const clampedLeaves = Math.max(1, Math.min(4, leaves))
 
-  // 四つ葉クローバーの各葉の位置（上・右・下・左）
-  // leaves数に応じて表示する葉を制御
-  const leafPositions = [
-    { cx: 10, cy: 4, rotate: 0 },     // 上
-    { cx: 16, cy: 10, rotate: 90 },    // 右
-    { cx: 10, cy: 16, rotate: 180 },   // 下
-    { cx: 4, cy: 10, rotate: 270 },    // 左
-  ]
-
   return (
     <svg
-      viewBox="0 0 20 20"
+      viewBox="0 0 24 24"
       width={size}
       height={size}
       className={className}
       aria-label={`クローバー ${clampedLeaves}枚葉`}
     >
       {/* 茎 */}
-      <line x1="10" y1="12" x2="10" y2="19" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" opacity={0.5} />
+      <path
+        d="M12 12 C12.7 15.8 12.5 19.4 11.5 22.5"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        opacity={0.55}
+      />
       {/* 葉 */}
-      {leafPositions.slice(0, clampedLeaves).map((pos, i) => (
-        <ellipse
+      {LEAF_ROTATIONS[clampedLeaves].map((rotate, i) => (
+        <path
           key={i}
-          cx={pos.cx}
-          cy={pos.cy}
-          rx="3.5"
-          ry="4.5"
+          d={LEAF_PATH}
           fill="currentColor"
-          transform={`rotate(${pos.rotate} ${pos.cx} ${pos.cy})`}
-          opacity={0.85}
+          transform={`rotate(${rotate} 12 12)`}
         />
       ))}
-      {/* 中心 */}
-      <circle cx="10" cy="10" r="1.5" fill="currentColor" opacity={0.6} />
     </svg>
   )
 }

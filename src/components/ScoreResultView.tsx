@@ -66,16 +66,17 @@ export default function ScoreResultView({
 
   useEffect(() => {
     const target = score.totalScore
-    const duration = 1200 // ms
+    const duration = 2600 // ms
     const startTime = performance.now()
 
-    // easeOutExpo: 最初は速く、最後はゆっくり（期待感を煽る）
-    const easeOutExpo = (t: number) => t === 1 ? 1 : 1 - Math.pow(2, -10 * t)
+    // easeInOutCubic: ゆっくり動き出し、中盤でじわじわ伸び、最後に静かに着地する
+    const easeInOutCubic = (t: number) =>
+      t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2
 
     const animate = (now: number) => {
       const elapsed = now - startTime
       const progress = Math.min(elapsed / duration, 1)
-      const eased = easeOutExpo(progress)
+      const eased = easeInOutCubic(progress)
       const current = Math.round(eased * target)
       setDisplayScore(current)
 
@@ -189,7 +190,7 @@ export default function ScoreResultView({
             {/* 中央のスコア表示 */}
             <div className="absolute inset-0 flex flex-col items-center justify-center">
               <span
-                className={`text-6xl font-extrabold tracking-tight leading-none transition-colors duration-500 ${getAccentClass(displayScore)}`}
+                className={`text-6xl font-extrabold tracking-tight leading-none transition-colors duration-500 ${getAccentClass(displayScore)} ${animationDone ? 'animate-score-pop' : ''}`}
                 style={{ fontVariantNumeric: 'tabular-nums' }}
               >
                 {displayScore}
