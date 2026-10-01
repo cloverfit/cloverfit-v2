@@ -48,12 +48,18 @@ CREATE TABLE IF NOT EXISTS measurements (
   stress INTEGER CHECK (stress BETWEEN 1 AND 5),
   sleep_quality INTEGER CHECK (sleep_quality BETWEEN 1 AND 5),
   subjective_score DECIMAL(3,1),
+  daily_goal TEXT,
+  training_log TEXT,
   notes TEXT,
   created_at TIMESTAMPTZ DEFAULT now() NOT NULL
 );
 
 CREATE INDEX IF NOT EXISTS idx_measurements_participant ON measurements (participant_id);
 CREATE INDEX IF NOT EXISTS idx_measurements_date ON measurements (measurement_date DESC);
+
+-- 既存のDBに対しては以下を実行して列を追加する
+ALTER TABLE measurements ADD COLUMN IF NOT EXISTS daily_goal TEXT;
+ALTER TABLE measurements ADD COLUMN IF NOT EXISTS training_log TEXT;
 
 -- ============================================
 -- 4. Feedback table (1:1 with measurement)
