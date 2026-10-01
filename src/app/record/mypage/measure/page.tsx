@@ -23,7 +23,6 @@ export default function SelfMeasurePage() {
   const [concentration, setConcentration] = useState('')
   const [stress, setStress] = useState('')
   const [sleepQuality, setSleepQuality] = useState('')
-  const [dailyGoal, setDailyGoal] = useState('')
   const [trainingLog, setTrainingLog] = useState('')
   const [notes, setNotes] = useState('')
 
@@ -104,7 +103,6 @@ export default function SelfMeasurePage() {
           stress: stress ? Number(stress) : null,
           sleep_quality: sleepQuality ? Number(sleepQuality) : null,
           subjective_score: preview.subjectiveScore,
-          daily_goal: dailyGoal || null,
           training_log: trainingLog || null,
           notes: notes || null,
           auto_feedback: {
@@ -135,7 +133,6 @@ export default function SelfMeasurePage() {
       setConcentration('')
       setStress('')
       setSleepQuality('')
-      setDailyGoal('')
       setTrainingLog('')
       setNotes('')
       setPreview(null)
@@ -268,22 +265,6 @@ export default function SelfMeasurePage() {
                   </div>
                 </div>
               </div>
-            </div>
-
-            {/* 今日の目標（安静時心拍を測ったあとに書いてもらう） */}
-            <div className="rounded-xl border border-border bg-card p-5">
-              <label className="block text-xs font-semibold text-muted mb-1 tracking-wider uppercase">
-                今日の目標
-                <span className="text-xs font-normal ml-2 normal-case tracking-normal">（任意）</span>
-              </label>
-              <p className="text-xs text-muted mb-2.5">今日これをやる、と決めたことを書いておきましょう。</p>
-              <input
-                type="text"
-                value={dailyGoal}
-                onChange={e => setDailyGoal(e.target.value)}
-                placeholder="例：スクワットを頑張る、散歩に行く"
-                className="w-full rounded-lg border border-border bg-background px-3 py-2.5 text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-clover/40"
-              />
             </div>
 
             {/* Subjective inputs */}

@@ -34,7 +34,6 @@ export interface Measurement {
   stress?: number
   sleep_quality?: number
   subjective_score?: number
-  daily_goal?: string
   training_log?: string
   notes?: string
   created_at: string

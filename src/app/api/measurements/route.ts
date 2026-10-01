@@ -73,7 +73,6 @@ export async function POST(request: Request) {
     stress,
     sleep_quality,
     subjective_score,
-    daily_goal,
     training_log,
     notes,
     auto_feedback,
@@ -100,7 +99,6 @@ export async function POST(request: Request) {
       stress: stress || null,
       sleep_quality: sleep_quality || null,
       subjective_score: subjective_score || null,
-      daily_goal: daily_goal || null,
       training_log: training_log || null,
       notes: notes || null,
     })
