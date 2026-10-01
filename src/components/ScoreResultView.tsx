@@ -1,7 +1,8 @@
 'use client'
 
 import { useEffect, useState, useRef } from 'react'
-import type { ScoreResult, AutoFeedback, AlignmentFeedback } from '@/lib/scoring'
+import { MAX_SCORE } from '@/lib/scoring'
+import type { ScoreResult, AutoFeedback, AlignmentFeedback, MetricRating } from '@/lib/scoring'
 import CloverIcon from '@/components/CloverIcon'
 
 interface ScoreResultViewProps {
@@ -96,14 +97,14 @@ export default function ScoreResultView({
   const radius = 82
   const strokeWidth = 16
   const circumference = 2 * Math.PI * radius
-  const animatedProgress = Math.min(displayScore / 120, 1)
+  const animatedProgress = Math.min(displayScore / MAX_SCORE, 1)
   const strokeDashoffset = circumference * (1 - animatedProgress)
   const ringColors = getRingColors(score.totalScore)
   const ringBg = getRingBg(score.totalScore)
   const gradientId = 'scoreGradient'
   const glowId = 'scoreGlow'
 
-  // 目盛り線の生成（120点満点を12分割）
+  // 目盛り線の生成（100点満点を12分割）
   const tickCount = 24
   const ticks = Array.from({ length: tickCount }, (_, i) => {
     const angle = (i / tickCount) * 360 - 90
@@ -208,10 +209,26 @@ export default function ScoreResultView({
           </span>
         </div>
 
-        {/* スコア / 120 表記 */}
+        {/* スコア / 100 表記 */}
         <p className="text-center text-xs text-muted mt-2" style={{ fontVariantNumeric: 'tabular-nums' }}>
-          {displayScore} / 120
+          {displayScore} / {MAX_SCORE}
         </p>
+
+        {/* 項目別の評価 */}
+        <div className="mt-5 grid grid-cols-2 gap-3">
+          <MetricCard
+            title="安静時心拍"
+            value={hrData.restingHR}
+            unit="bpm"
+            rating={score.restingRating}
+          />
+          <MetricCard
+            title="心拍リカバリー"
+            value={score.recoveryAmount}
+            unit="bpm"
+            rating={score.recoveryRating}
+          />
+        </div>
       </div>
 
       {/* 客観データからのフィードバック */}
@@ -344,7 +361,7 @@ export default function ScoreResultView({
               <div className="w-full h-2 rounded-full bg-clover-light/30">
                 <div
                   className="h-2 rounded-full bg-clover transition-all duration-700"
-                  style={{ width: `${Math.min(score.totalScore / 120 * 100, 100)}%` }}
+                  style={{ width: `${Math.min(score.totalScore / MAX_SCORE * 100, 100)}%` }}
                 />
               </div>
               <p className="text-xs font-medium text-muted mt-2">体の実感（主観）</p>
@@ -425,6 +442,42 @@ export default function ScoreResultView({
         </button>
         {secondaryAction}
       </div>
+    </div>
+  )
+}
+
+// ── 項目別の評価カード（安静時心拍 / 心拍リカバリー）──
+const GRADE_STYLES: Record<MetricRating['grade'], string> = {
+  excellent: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300',
+  good: 'bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-300',
+  average: 'bg-sky-100 text-sky-700 dark:bg-sky-900/30 dark:text-sky-300',
+  fair: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300',
+  poor: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300',
+}
+
+function MetricCard({
+  title,
+  value,
+  unit,
+  rating,
+}: {
+  title: string
+  value: number
+  unit: string
+  rating: MetricRating
+}) {
+  return (
+    <div className="rounded-xl border border-border bg-background p-3.5">
+      <p className="text-[11px] font-medium text-muted">{title}</p>
+      <p className="mt-0.5 font-bold text-foreground" style={{ fontVariantNumeric: 'tabular-nums' }}>
+        <span className="text-2xl tracking-tight">{value}</span>
+        <span className="text-[10px] text-muted ml-1">{unit}</span>
+      </p>
+      <span
+        className={`mt-2 inline-block px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wide ${GRADE_STYLES[rating.grade]}`}
+      >
+        {rating.label}
+      </span>
     </div>
   )
 }

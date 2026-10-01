@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import type { MeasurementWithFeedback } from '@/types/database'
-import { getLevel } from '@/lib/scoring'
+import { getLevel, rescaleMeasurements } from '@/lib/scoring'
 
 interface DashboardStats {
   totalParticipants: number
@@ -18,7 +18,7 @@ export default function AdminDashboard() {
   useEffect(() => {
     fetch('/api/admin/dashboard')
       .then(res => res.json())
-      .then(data => setStats(data))
+      .then(data => setStats(data ? { ...data, recentMeasurements: rescaleMeasurements(data.recentMeasurements || []) } : data))
       .catch(console.error)
       .finally(() => setLoading(false))
   }, [])

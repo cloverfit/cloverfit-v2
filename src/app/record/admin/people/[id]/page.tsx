@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import type { Participant, MeasurementWithFeedback } from '@/types/database'
-import { getLevel } from '@/lib/scoring'
+import { getLevel, rescaleMeasurements, MAX_SCORE } from '@/lib/scoring'
 
 interface PersonDetail {
   participant: Participant
@@ -28,7 +28,7 @@ export default function PersonDetailPage() {
   useEffect(() => {
     fetch(`/api/admin/people/${id}`)
       .then(res => res.json())
-      .then(d => setData(d))
+      .then(d => setData(d ? { ...d, measurements: rescaleMeasurements(d.measurements || []) } : d))
       .catch(console.error)
       .finally(() => setLoading(false))
   }, [id])
@@ -91,7 +91,7 @@ export default function PersonDetailPage() {
 
   // Chart data (last 10, oldest first)
   const chartData = measurements.slice(0, 10).reverse()
-  const chartMax = 120
+  const chartMax = MAX_SCORE
 
   return (
     <div className="space-y-5">
@@ -148,7 +148,7 @@ export default function PersonDetailPage() {
                   <p className="text-white/80 text-xs font-medium tracking-wider uppercase">Latest Score</p>
                   <div className="flex items-baseline gap-2 mt-1">
                     <span className="text-5xl font-extrabold tracking-tighter">{latest.total_score}</span>
-                    <span className="text-white/70 text-sm font-medium">/ 120</span>
+                    <span className="text-white/70 text-sm font-medium">/ {MAX_SCORE}</span>
                   </div>
                 </div>
                 <span className="inline-block px-3 py-1.5 rounded-lg text-lg font-extrabold bg-white/20 backdrop-blur-sm">
@@ -201,7 +201,7 @@ export default function PersonDetailPage() {
               <div className="px-4 pb-4">
                 <svg viewBox="0 0 320 140" className="w-full" preserveAspectRatio="xMidYMid meet">
                   {/* Grid lines */}
-                  {[0, 40, 60, 80, 100, 120].map(v => {
+                  {[0, 20, 40, 60, 80, 100].map(v => {
                     const y = 120 - (v / chartMax) * 110 + 10
                     return (
                       <g key={v}>

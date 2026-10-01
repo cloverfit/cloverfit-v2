@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import type { MeasurementWithFeedback } from '@/types/database'
-import { getLevel } from '@/lib/scoring'
+import { getLevel, rescaleMeasurements } from '@/lib/scoring'
 import CloverIcon from '@/components/CloverIcon'
 
 export default function FeedbackPage() {
@@ -19,7 +19,7 @@ export default function FeedbackPage() {
   useEffect(() => {
     fetch('/api/measurements?with_feedback=true&limit=20')
       .then(res => res.json())
-      .then(data => setMeasurements(data.measurements || []))
+      .then(data => setMeasurements(rescaleMeasurements(data.measurements || [])))
       .catch(console.error)
       .finally(() => setLoading(false))
   }, [])

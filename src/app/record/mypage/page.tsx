@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import CloverFitLogo from '@/components/CloverFitLogo'
 import type { Participant, MeasurementWithFeedback } from '@/types/database'
-import { getLevel } from '@/lib/scoring'
+import { getLevel, rescaleMeasurements, MAX_SCORE } from '@/lib/scoring'
 
 export default function MyPage() {
   const router = useRouter()
@@ -27,7 +27,7 @@ export default function MyPage() {
     fetch(`/api/measurements?participant_id=${p.id}&with_feedback=1`)
       .then(res => res.json())
       .then(data => {
-        setMeasurements(data.measurements || [])
+        setMeasurements(rescaleMeasurements(data.measurements || []))
       })
       .catch(console.error)
       .finally(() => setLoading(false))
@@ -44,7 +44,7 @@ export default function MyPage() {
   const latestLevel = latest ? getLevel(latest.total_score) : null
   const previous = measurements[1]
   const scoreDiff = latest && previous ? latest.total_score - previous.total_score : null
-  const scoreBarWidth = latest ? Math.min((latest.total_score / 120) * 100, 100) : 0
+  const scoreBarWidth = latest ? Math.min((latest.total_score / MAX_SCORE) * 100, 100) : 0
 
   // Score color helpers (no emoji, clean design)
   function getScoreColor(score: number): string {
@@ -73,7 +73,7 @@ export default function MyPage() {
 
   // Line chart data (last 10 measurements, oldest first for left-to-right)
   const chartData = measurements.slice(0, 10).reverse()
-  const chartMax = 120
+  const chartMax = MAX_SCORE
   const chartMin = 0
 
   function subjectiveLabel(val: number | undefined): string {
@@ -132,7 +132,7 @@ export default function MyPage() {
                       <p className="text-white/80 text-xs font-medium tracking-wider uppercase">Latest Score</p>
                       <div className="flex items-baseline gap-2 mt-1">
                         <span className="text-5xl font-extrabold tracking-tighter">{latest.total_score}</span>
-                        <span className="text-white/70 text-sm font-medium">/ 120</span>
+                        <span className="text-white/70 text-sm font-medium">/ {MAX_SCORE}</span>
                       </div>
                     </div>
                     <div className="text-right">
@@ -222,7 +222,7 @@ export default function MyPage() {
                   <div className="px-4 pb-4">
                     <svg viewBox="0 0 320 140" className="w-full" preserveAspectRatio="xMidYMid meet">
                       {/* Grid lines */}
-                      {[0, 40, 60, 80, 100, 120].map(v => {
+                      {[0, 20, 40, 60, 80, 100].map(v => {
                         const y = 120 - (v / chartMax) * 110 + 10
                         return (
                           <g key={v}>
@@ -233,7 +233,7 @@ export default function MyPage() {
                       })}
 
                       {/* Rank zones (subtle background) */}
-                      <rect x="35" y={120 - (100 / chartMax) * 110 + 10} width="275" height={(20 / chartMax) * 110} fill="#f59e0b" fillOpacity="0.04" />
+                      <rect x="35" y={120 - (100 / chartMax) * 110 + 10} width="275" height={(20 / chartMax) * 110} fill="#10b981" fillOpacity="0.04" />
                       <rect x="35" y={120 - (80 / chartMax) * 110 + 10} width="275" height={(20 / chartMax) * 110} fill="#10b981" fillOpacity="0.04" />
 
                       {/* Line + dots */}

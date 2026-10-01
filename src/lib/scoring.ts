@@ -18,20 +18,49 @@ export interface ScoreResult {
   totalScore: number
   subjectiveScore: number | null
   level: ScoreLevel
+  restingRating: MetricRating
+  recoveryRating: MetricRating
+}
+
+// 安静時心拍・HRRそれぞれの個別評価
+export type MetricGrade = 'excellent' | 'good' | 'average' | 'fair' | 'poor'
+
+export interface MetricRating {
+  grade: MetricGrade
+  label: string
+  range: string
 }
 
 export interface ScoreLevel {
   name: string
-  leaves: number  // 1-4: クローバーの葉の数でレベル表現
+  leaves: number  // 四つ葉固定（4）
   label: string
   min: number
 }
 
-// スコア = 100 - 安静時HR + リカバリー量
+export const MAX_SCORE = 100
+
+// スコア = 100 - 安静時HR + リカバリー量（0〜100で頭打ち）
+export function scoreFromHR(restingHR: number, maxHR: number, recoveryHR: number): number {
+  const raw = 100 - restingHR + (maxHR - recoveryHR)
+  return Math.max(0, Math.min(MAX_SCORE, Math.round(raw)))
+}
+
+// 保存済みレコードを新しい満点に合わせて再計算する。
+// 生の心拍値が残っているので、過去の記録も同じ尺度で読める。
+export function rescaleMeasurements<
+  T extends { resting_hr: number; max_hr: number; recovery_hr: number; total_score: number }
+>(rows: T[]): T[] {
+  return rows.map(m => ({
+    ...m,
+    total_score: scoreFromHR(m.resting_hr, m.max_hr, m.recovery_hr),
+  }))
+}
+
 export function calculateScore(hr: HRData, subjective?: SubjectiveData): ScoreResult {
   const recoveryAmount = hr.maxHR - hr.recoveryHR
 
-  const totalScore = 100 - hr.restingHR + recoveryAmount
+  const totalScore = scoreFromHR(hr.restingHR, hr.maxHR, hr.recoveryHR)
 
   let subjectiveScore: number | null = null
   if (subjective && Object.values(subjective).some(v => v !== undefined)) {
@@ -46,16 +75,39 @@ export function calculateScore(hr: HRData, subjective?: SubjectiveData): ScoreRe
     totalScore,
     subjectiveScore,
     level: getLevel(totalScore),
+    restingRating: getRestingRating(hr.restingHR),
+    recoveryRating: getRecoveryRating(recoveryAmount),
   }
+}
+
+// ── 安静時心拍の評価 ──
+// 一般成人の通常範囲は60〜100bpm。運動習慣のある人では40〜50台まで下がる。
+// 80bpm超は大規模コホートで予後との関連が報告されている帯。
+export function getRestingRating(restingHR: number): MetricRating {
+  if (restingHR <= 49) return { grade: 'excellent', label: 'EXCELLENT', range: '49以下' }
+  if (restingHR <= 59) return { grade: 'good', label: 'GOOD', range: '50〜59' }
+  if (restingHR <= 69) return { grade: 'average', label: 'AVERAGE', range: '60〜69' }
+  if (restingHR <= 79) return { grade: 'fair', label: 'SLIGHTLY HIGH', range: '70〜79' }
+  return { grade: 'poor', label: 'HIGH', range: '80以上' }
+}
+
+// ── 1分後心拍リカバリー（HRR1）の評価 ──
+// 健康成人の平均は約30bpm。12bpm以下は回復が遅い帯として知られる。
+export function getRecoveryRating(recoveryAmount: number): MetricRating {
+  if (recoveryAmount >= 40) return { grade: 'excellent', label: 'EXCELLENT', range: '40以上' }
+  if (recoveryAmount >= 30) return { grade: 'good', label: 'GOOD', range: '30〜39' }
+  if (recoveryAmount >= 20) return { grade: 'average', label: 'AVERAGE', range: '20〜29' }
+  if (recoveryAmount >= 13) return { grade: 'fair', label: 'LOW', range: '13〜19' }
+  return { grade: 'poor', label: 'VERY LOW', range: '12以下' }
 }
 
 // レベル判定
 const LEVELS: ScoreLevel[] = [
   { name: 'master', leaves: 4, label: 'CONGRATULATIONS', min: 100 },
-  { name: 'expert', leaves: 3, label: 'EXCELLENT', min: 80 },
-  { name: 'standard', leaves: 2, label: 'GOOD', min: 60 },
-  { name: 'beginner', leaves: 1, label: 'TIRED', min: 40 },
-  { name: 'starter', leaves: 1, label: 'NEEDS CARE', min: 0 },
+  { name: 'expert', leaves: 4, label: 'EXCELLENT', min: 80 },
+  { name: 'standard', leaves: 4, label: 'GOOD', min: 60 },
+  { name: 'beginner', leaves: 4, label: 'TIRED', min: 40 },
+  { name: 'starter', leaves: 4, label: 'NEEDS CARE', min: 0 },
 ]
 
 export function getLevel(score: number): ScoreLevel {
@@ -208,7 +260,7 @@ export function generateAutoFeedback(
       }
     } else {
       // mid × high/low の中間パターン
-      const gap = (subjectiveScore / 5) * 120 - score
+      const gap = (subjectiveScore / 5) * MAX_SCORE - score
       if (Math.abs(gap) < 20) {
         alignmentFeedback = {
           type: 'aligned-mid',
