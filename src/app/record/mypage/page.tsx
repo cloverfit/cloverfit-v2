@@ -294,7 +294,7 @@ export default function MyPage() {
                     const prev = measurements[i + 1]
                     const diff = prev ? m.total_score - prev.total_score : null
                     const isExpanded = expandedId === m.id
-                    const hasMemo = m.notes || m.training_log || m.fatigue || m.concentration || m.stress || m.sleep_quality
+                    const hasMemo = m.notes || m.daily_goal || m.training_log || m.fatigue || m.concentration || m.stress || m.sleep_quality
                     const hasFeedback = m.feedback && (m.feedback.auto_score_feedback || m.feedback.auto_recovery_feedback || m.feedback.instructor_good_points)
 
                     return (
@@ -387,7 +387,14 @@ export default function MyPage() {
                               </div>
                             )}
 
-                            {/* やったこと */}
+                            {/* 今日の目標 / やったこと */}
+                            {m.daily_goal && (
+                              <div className="rounded-lg bg-card border border-border/60 p-3">
+                                <p className="text-[10px] text-muted font-medium tracking-wider uppercase mb-1.5">今日の目標</p>
+                                <p className="text-sm text-foreground leading-relaxed">{m.daily_goal}</p>
+                              </div>
+                            )}
+
                             {m.training_log && (
                               <div className="rounded-lg bg-card border border-border/60 p-3">
                                 <p className="text-[10px] text-muted font-medium tracking-wider uppercase mb-1.5">やったこと</p>
