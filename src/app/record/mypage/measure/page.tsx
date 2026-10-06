@@ -343,8 +343,9 @@ export default function SelfMeasurePage() {
 
                     <div className="rounded-xl border border-clover/20 bg-clover-light/20 p-4">
                       <p className="text-sm text-foreground leading-relaxed">
-                        運動をやめたら、その場で立ったまま1分待ってからもう一度測ってください。
-                        座ったり歩き回ったりすると数値が変わります。
+                        運動をやめたら、その場で立ったまま1分待ちます。
+                        1分たったら座って、落ち着いた状態で測ってください。
+                        待っている間に歩き回ると数値が変わります。
                       </p>
                     </div>
 
@@ -369,7 +370,7 @@ export default function SelfMeasurePage() {
                       <div>
                         <label className="block text-sm font-medium text-foreground mb-1.5">
                           1分後の心拍数
-                          <span className="text-xs text-muted ml-1.5 font-normal">立ったまま1分待って</span>
+                          <span className="text-xs text-muted ml-1.5 font-normal">1分立って待ってから、座って測定</span>
                         </label>
                         <div className="relative">
                           <input
