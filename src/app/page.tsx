@@ -32,7 +32,6 @@ export default function LandingPage() {
             href="/measure"
             className="group block rounded-xl border border-border bg-card p-6 transition-all hover:border-clover hover:shadow-md"
           >
-            <CloverFitLogo size="sm" showText={false} className="mb-3" />
             <h3 className="font-bold text-lg text-foreground mb-2">
               測定する
             </h3>
@@ -50,7 +49,6 @@ export default function LandingPage() {
             href="/record/login"
             className="group block rounded-xl border border-border bg-card p-6 transition-all hover:border-clover hover:shadow-md"
           >
-            <div className="text-3xl mb-3">📊</div>
             <h3 className="font-bold text-lg text-foreground mb-2">
               記録・管理する
             </h3>
