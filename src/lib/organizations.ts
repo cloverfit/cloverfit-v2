@@ -10,4 +10,5 @@ export const ORGANIZATIONS: Organization[] = [
   { id: 'cloverfit', name: 'クローバーフィット' },
   { id: 'docomo-group', name: 'ドコモグループ社員' },
   { id: 'wellbeing-office', name: 'ウェルビーイング推進室' },
+  { id: 'wil-run-community', name: 'WILランコミュニティ' },
 ]
