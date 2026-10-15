@@ -1,7 +1,14 @@
 import { supabase } from '@/lib/supabase'
+import { normalizeCode, normalizeDigits, normalizeName } from '@/lib/text'
 
 export async function POST(request: Request) {
-  const { name, pin_code, instructor_code, company_name, birth_date, gender } = await request.json()
+  const body = await request.json()
+  const { company_name, birth_date, gender } = body
+
+  // クライアント側で正規化済みだが、全角のまま届く経路もあるのでここでも畳む
+  const name = normalizeName(String(body.name ?? ''))
+  const pin_code = normalizeDigits(String(body.pin_code ?? ''))
+  const instructor_code = normalizeCode(String(body.instructor_code ?? ''))
 
   // Validate required fields
   if (!name || !pin_code || pin_code.length !== 4) {
@@ -16,7 +23,7 @@ export async function POST(request: Request) {
   const { data: instructor, error: instrError } = await supabase
     .from('instructors')
     .select('id')
-    .eq('instructor_code', instructor_code.trim().toUpperCase())
+    .eq('instructor_code', instructor_code)
     .single()
 
   if (instrError || !instructor) {

@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import CloverFitLogo from '@/components/CloverFitLogo'
+import { normalizeCode, normalizeDigits, normalizeName } from '@/lib/text'
 
 type LoginMode = 'participant' | 'instructor'
 
@@ -29,7 +30,7 @@ export default function LoginPage() {
       const res = await fetch('/api/auth/participant', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, pin_code: pin }),
+        body: JSON.stringify({ name: normalizeName(name), pin_code: pin }),
       })
       const data = await res.json()
 
@@ -137,7 +138,7 @@ export default function LoginPage() {
                   inputMode="numeric"
                   maxLength={4}
                   value={pin}
-                  onChange={e => setPin(e.target.value.replace(/\D/g, '').slice(0, 4))}
+                  onChange={e => setPin(normalizeDigits(e.target.value).slice(0, 4))}
                   placeholder="••••"
                   required
                   className="w-full rounded-lg border border-border bg-card px-4 py-3 text-foreground text-lg tracking-[0.5em] text-center placeholder:text-muted/50 placeholder:tracking-normal focus:outline-none focus:ring-2 focus:ring-clover/40 focus:border-clover transition-colors"
@@ -158,7 +159,10 @@ export default function LoginPage() {
                 <input
                   type="text"
                   value={instructorCode}
-                  onChange={e => setInstructorCode(e.target.value.toUpperCase().slice(0, 6))}
+                  onChange={e => setInstructorCode(normalizeCode(e.target.value).slice(0, 6))}
+                  autoCapitalize="characters"
+                  autoCorrect="off"
+                  spellCheck={false}
                   required
                   maxLength={6}
                   className="w-full rounded-lg border border-border bg-card px-4 py-3 text-foreground text-lg tracking-[0.3em] text-center uppercase focus:outline-none focus:ring-2 focus:ring-clover/40 focus:border-clover transition-colors"

@@ -1,7 +1,9 @@
 import { supabase } from '@/lib/supabase'
+import { normalizeCode } from '@/lib/text'
 
 export async function POST(request: Request) {
-  const { instructor_code } = await request.json()
+  const body = await request.json()
+  const instructor_code = normalizeCode(String(body.instructor_code ?? ''))
 
   if (!instructor_code) {
     return Response.json({ error: 'インストラクターコードを入力してください' }, { status: 400 })
@@ -11,7 +13,7 @@ export async function POST(request: Request) {
   const { data: instructor, error: instrError } = await supabase
     .from('instructors')
     .select('*')
-    .eq('instructor_code', instructor_code.trim().toUpperCase())
+    .eq('instructor_code', instructor_code)
     .single()
 
   if (instrError || !instructor) {

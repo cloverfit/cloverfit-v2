@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import CloverFitLogo from '@/components/CloverFitLogo'
 import { ORGANIZATIONS } from '@/lib/organizations'
+import { normalizeCode, normalizeDigits, normalizeName } from '@/lib/text'
 
 export default function RegisterPage() {
   const router = useRouter()
@@ -35,7 +36,7 @@ export default function RegisterPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name,
+          name: normalizeName(name),
           pin_code: pinCode,
           instructor_code: instructorCode,
           company_name: companyName || null,
@@ -122,7 +123,10 @@ export default function RegisterPage() {
               <input
                 type="text"
                 value={instructorCode}
-                onChange={e => setInstructorCode(e.target.value.toUpperCase().slice(0, 6))}
+                onChange={e => setInstructorCode(normalizeCode(e.target.value).slice(0, 6))}
+                autoCapitalize="characters"
+                autoCorrect="off"
+                spellCheck={false}
                 required
                 maxLength={6}
                 className="w-full rounded-lg border border-border bg-card px-4 py-3 text-foreground text-lg tracking-[0.3em] text-center uppercase focus:outline-none focus:ring-2 focus:ring-clover/40 focus:border-clover transition-colors"
@@ -149,7 +153,7 @@ export default function RegisterPage() {
                 inputMode="numeric"
                 maxLength={4}
                 value={pinCode}
-                onChange={e => setPinCode(e.target.value.replace(/\D/g, '').slice(0, 4))}
+                onChange={e => setPinCode(normalizeDigits(e.target.value).slice(0, 4))}
                 placeholder="••••"
                 required
                 className="w-full rounded-lg border border-border bg-card px-4 py-3 text-foreground text-lg tracking-[0.5em] text-center placeholder:text-muted/50 placeholder:tracking-normal focus:outline-none focus:ring-2 focus:ring-clover/40 focus:border-clover transition-colors"
@@ -164,7 +168,7 @@ export default function RegisterPage() {
                 inputMode="numeric"
                 maxLength={4}
                 value={pinConfirm}
-                onChange={e => setPinConfirm(e.target.value.replace(/\D/g, '').slice(0, 4))}
+                onChange={e => setPinConfirm(normalizeDigits(e.target.value).slice(0, 4))}
                 placeholder="••••"
                 required
                 className="w-full rounded-lg border border-border bg-card px-4 py-3 text-foreground text-lg tracking-[0.5em] text-center placeholder:text-muted/50 placeholder:tracking-normal focus:outline-none focus:ring-2 focus:ring-clover/40 focus:border-clover transition-colors"
